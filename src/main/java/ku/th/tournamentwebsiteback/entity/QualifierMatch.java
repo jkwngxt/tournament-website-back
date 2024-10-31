@@ -11,7 +11,6 @@ import java.util.UUID;
 public class QualifierMatch {
     @Id
     private UUID lobbyId;
-    private String refereeUserId;
     private String lobbyName;
     private ZonedDateTime startLobbyDateTime;
     private ZonedDateTime closeLobbyDateTime;
@@ -23,6 +22,7 @@ public class QualifierMatch {
     List<Judge> judges;
 
     @ManyToOne
+    @JoinColumn(name = "tournament_id")
     private Tournament tournament;
 
 }
