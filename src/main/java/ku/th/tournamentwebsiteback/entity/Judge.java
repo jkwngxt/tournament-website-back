@@ -1,8 +1,6 @@
 package ku.th.tournamentwebsiteback.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
 import lombok.Data;
 
@@ -10,12 +8,16 @@ import java.io.Serializable;
 import java.util.UUID;
 @Data
 @Entity
-@IdClass(JudgePK.class)
-public class Judge implements Serializable {
-    @Id
-    private UUID lobby_id;
-    @Id
-    private String user_id;
-    @Id
-    private UUID tournament_id;
+public class Judge {
+    @EmbeddedId
+    private JudgePK id;
+
+    @ManyToOne
+    @MapsId("joinAsStaffRelationshipId")
+    private JoinAsStaffRelationship joinAsStaffRelationship;
+
+    @ManyToOne
+    @MapsId("lobbyId")
+    @JoinColumn(name = "lobby_id")
+    private QualifierMatch qualifierMatch;
 }

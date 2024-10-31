@@ -1,18 +1,24 @@
 package ku.th.tournamentwebsiteback.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 @Data
 @Entity
 public class Team {
     @Id
-    private UUID team_id;
-    private String captain_user_id;
-    private String team_name;
-    private String profile_image;
-    private UUID lobby_id;
+    private UUID teamId;
+    private String captainUserId;
+    private String teamName;
+    private String profileImage;
+    private UUID lobbyId;
     private String status;
+
+    @OneToMany(mappedBy = "team")
+    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+
+    @ManyToOne
+    private QualifierMatch qualifierMatch;
 }

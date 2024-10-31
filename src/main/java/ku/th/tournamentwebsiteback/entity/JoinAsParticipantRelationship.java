@@ -2,30 +2,27 @@ package ku.th.tournamentwebsiteback.entity;
 
 import jakarta.persistence.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
-import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import lombok.Data;
 
-import java.util.List;
 import java.util.UUID;
 @Data
 @Entity
-public class JoinAsStaffRelationship {
+public class JoinAsParticipantRelationship {
     @EmbeddedId
-    private JoinAsStaffRelationshipPK id;
-
-    private String position;
-    private String status;
+    private JoinAsParticipantsRelationshipPK id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     @MapsId("userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @MapsId("tournamentId")
     @JoinColumn(name = "tournament_id")
+    @MapsId("tournamentId")
     private Tournament tournament;
 
-    @OneToMany(mappedBy = "joinAsStaffRelationship")
-    List<Judge> judges;
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    @MapsId("teamId")
+    private Team team;
 }

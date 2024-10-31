@@ -1,24 +1,36 @@
 package ku.th.tournamentwebsiteback.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 @Data
 @Entity
 public class Tournament {
     @Id
-    private UUID tournament_id;
+    private UUID tournamentId;
     private String title;
     private String description;
-    private ZonedDateTime start_qualifier_date_time;
-    private ZonedDateTime end_date_time;
-    private ZonedDateTime start_staff_regis_date_time;
-    private ZonedDateTime start_team_regis_date_time;
-    private ZonedDateTime close_team_regis_date_time;
-    private int team_member_amount;
-    private boolean is_accept_international_staff;
-    private int expected_staff;
+    private ZonedDateTime startQualifierDateTime;
+    private ZonedDateTime endDateTime;
+    private ZonedDateTime startStaffRegisDateTime;
+    private ZonedDateTime startTeamRegisDateTime;
+    private ZonedDateTime closeTeamRegisDateTime;
+    private int teamMemberAmount;
+    private boolean isAcceptInternationalStaff;
+    private int expectedStaff;
+
+    @OneToMany(mappedBy = "tournament")
+    List<JoinAsStaffRelationship> joinAsStaffRelationships;
+
+    @OneToMany(mappedBy = "tournament")
+    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+
+    @OneToMany(mappedBy = "tournament")
+    List<QualifierMatch> qualifierMatches;
 }

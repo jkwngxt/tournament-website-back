@@ -1,13 +1,21 @@
 package ku.th.tournamentwebsiteback.entity.composite_primary_key;
 
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 @Data
+@Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class JoinAsParticipantsRelationshipPK implements Serializable {
-    private String user_id;
-    private UUID team_id;
-    private UUID tournament_id;
+    private String userId;
+    private UUID teamId;
+    private UUID tournamentId;
 }
