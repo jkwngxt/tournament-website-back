@@ -1,5 +1,6 @@
 package ku.th.tournamentwebsiteback.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -18,15 +19,19 @@ public class User {
     private Integer rank;
     private String profileImageUrl;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<JoinAsStaffRelationship> joinAsStaffRelationships;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "user", optional = true)
     private Admin admin;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "user", optional = true)
     private Team team;
 

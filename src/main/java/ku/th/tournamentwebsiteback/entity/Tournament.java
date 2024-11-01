@@ -1,5 +1,6 @@
 package ku.th.tournamentwebsiteback.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,12 +28,15 @@ public class Tournament {
     private boolean isAcceptInternationalStaff;
     private int expectedStaff;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "tournament")
     private List<JoinAsStaffRelationship> joinAsStaffRelationships;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "tournament")
     private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "tournament")
     private List<QualifierMatch> qualifierMatches;
 }

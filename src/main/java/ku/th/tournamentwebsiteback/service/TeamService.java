@@ -2,7 +2,6 @@ package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.entity.Team;
-import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.repository.TeamRepository;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;

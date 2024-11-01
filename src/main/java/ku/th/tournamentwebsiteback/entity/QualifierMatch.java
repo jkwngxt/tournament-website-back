@@ -1,5 +1,7 @@
 package ku.th.tournamentwebsiteback.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,12 +19,15 @@ public class QualifierMatch {
     private ZonedDateTime startLobbyDateTime;
     private ZonedDateTime closeLobbyDateTime;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "qualifierMatch")
     private List<Team> teams;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "qualifierMatch")
     private List<Judge> judges;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "tournament_id")
     private Tournament tournament;

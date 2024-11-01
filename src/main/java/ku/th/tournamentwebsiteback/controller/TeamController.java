@@ -29,7 +29,7 @@ public class TeamController {
     }
 
     @PutMapping("/validate/{id}")
-    public ResponseEntity<String> createTeam(@PathVariable UUID id, @RequestBody ValidateTeamRequest request) {
+    public ResponseEntity<String> validateTeam(@PathVariable UUID id, @RequestBody ValidateTeamRequest request) {
         teamService.validateTeam(id, request);
         return ResponseEntity.ok("Team validated successfully");
     }

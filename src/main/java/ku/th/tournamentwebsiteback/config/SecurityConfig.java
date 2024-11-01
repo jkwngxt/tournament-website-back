@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/tournaments/update/**").authenticated()
                         .requestMatchers("/teams").permitAll()
                         .requestMatchers("/teams/**").permitAll()
+                        .requestMatchers("/lobby/**").permitAll()
                         .requestMatchers("/tournaments/validate/**").authenticated()
                         .anyRequest().authenticated()
                 )
