@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
 import lombok.Data;
 
-import java.util.UUID;
 @Data
 @Entity
 public class JoinAsParticipantRelationship {

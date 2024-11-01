@@ -1,12 +1,11 @@
 package ku.th.tournamentwebsiteback.entity;
 
 import jakarta.persistence.*;
-import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
+
 @Data
 @Entity
 public class JoinAsStaffRelationship {

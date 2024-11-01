@@ -4,11 +4,10 @@ import ku.th.tournamentwebsiteback.entity.User;
 import ku.th.tournamentwebsiteback.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -43,29 +42,41 @@ public class AuthService {
 
     public Map<String, Object> processOAuthCallback(String code) {
         RestTemplate restTemplate = new RestTemplate();
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("client_id", clientId);
-        requestBody.put("client_secret", clientSecret);
-        requestBody.put("code", code);
-        requestBody.put("grant_type", "authorization_code");
-        requestBody.put("redirect_uri", redirectUri);
 
-        Map<String, Object> response = restTemplate.postForObject(tokenUrl, requestBody, Map.class);
+        // Create a MultiValueMap to represent form data
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("client_id", clientId);
+        requestBody.add("client_secret", clientSecret);
+        requestBody.add("code", code);
+        requestBody.add("grant_type", "authorization_code");
+        requestBody.add("redirect_uri", redirectUri);
+
+        // Set the Content-Type header to application/x-www-form-urlencoded
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create an HttpEntity with the headers and body
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // Send the POST request
+        ResponseEntity<Map> responseEntity = restTemplate.postForEntity(tokenUrl, requestEntity, Map.class);
+        Map<String, Object> response = responseEntity.getBody();
         Map<String, Object> result = new HashMap<>();
 
         if (response != null && response.get("access_token") != null) {
             String accessToken = (String) response.get("access_token");
 
-            // fetch data by using osu! API
+            // Fetch data using osu! API
             String apiUrl = "https://osu.ppy.sh/api/v2/me/osu";
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", "Bearer " + accessToken);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpHeaders apiHeaders = new HttpHeaders();
+            apiHeaders.set("Authorization", "Bearer " + accessToken);
+            HttpEntity<String> apiEntity = new HttpEntity<>(apiHeaders);
 
-            ResponseEntity<Map> userDataResponse = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, Map.class);
+            ResponseEntity<Map> userDataResponse = restTemplate.exchange(apiUrl, HttpMethod.GET, apiEntity, Map.class);
             Map<String, Object> userData = userDataResponse.getBody();
 
             if (userData != null) {
+                // Extract user information and process as before
                 Integer userId = (Integer) userData.get("id");
                 String username = (String) userData.get("username");
                 String profileImageUrl = (String) userData.get("avatar_url");
@@ -90,8 +101,10 @@ public class AuthService {
                 String jwtToken = tokenService.generateToken(userId);
 
                 result.put("status", "Login successful");
-                result.put("๋token", jwtToken);
+                result.put("token", jwtToken);
                 result.put("profileImageUrl", profileImageUrl);
+            } else {
+                result.put("status", "Failed to fetch user data");
             }
         } else {
             result.put("status", "Login failed");

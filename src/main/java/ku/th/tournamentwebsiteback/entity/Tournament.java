@@ -1,11 +1,15 @@
 package ku.th.tournamentwebsiteback.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+
 @Data
 @Entity
 public class Tournament {
