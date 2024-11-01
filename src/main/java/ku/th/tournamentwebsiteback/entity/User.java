@@ -15,6 +15,7 @@ public class User {
     private String username;
     private String country;
     private int rank;
+    private String profileImageUrl;
 
     @OneToMany(mappedBy = "user")
     List<JoinAsStaffRelationship> joinAsStaffRelationships;
