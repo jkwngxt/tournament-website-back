@@ -14,7 +14,7 @@ public class User {
     private Integer userId;
     private String username;
     private String country;
-    private int rank;
+    private Integer rank;
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "user")

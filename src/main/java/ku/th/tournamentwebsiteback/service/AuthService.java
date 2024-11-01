@@ -69,11 +69,19 @@ public class AuthService {
                 Integer userId = (Integer) userData.get("id");
                 String username = (String) userData.get("username");
                 String profileImageUrl = (String) userData.get("avatar_url");
+                Map<String, Object> statistics = (Map<String, Object>) userData.get("statistics");
+                Integer globalRank = statistics != null ? (Integer) statistics.get("global_rank") : null;
+                Map<String, Object> countryData = (Map<String, Object>) userData.get("country");
+                String country = (countryData != null && countryData.get("name") != null)
+                        ? (String) countryData.get("name")
+                        : "Unknown";
 
                 User user = userRepository.findById(userId).orElse(new User());
                 user.setUserId(userId);
                 user.setUsername(username);
                 user.setProfileImageUrl(profileImageUrl);
+                user.setRank(globalRank);
+                user.setCountry(country);
 
                 // Save or update user in the database
                 userRepository.save(user);
@@ -82,7 +90,7 @@ public class AuthService {
                 String jwtToken = tokenService.generateToken(userId);
 
                 result.put("status", "Login successful");
-                result.put("token", jwtToken);
+                result.put("๋token", jwtToken);
                 result.put("profileImageUrl", profileImageUrl);
             }
         } else {

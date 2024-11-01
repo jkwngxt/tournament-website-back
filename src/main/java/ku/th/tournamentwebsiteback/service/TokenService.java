@@ -13,7 +13,7 @@ import java.util.Map;
 @Service
 public class TokenService {
 
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // สร้าง key ที่มีความปลอดภัยเพียงพอ
+    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String generateToken(Integer userId) {
         Map<String, Object> claims = new HashMap<>();
@@ -21,8 +21,8 @@ public class TokenService {
                 .setClaims(claims)
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 ชั่วโมง
-                .signWith(secretKey) // ใช้ key ที่สร้างขึ้น
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(secretKey)
                 .compact();
     }
 
