@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 public class User {
     @Id
-    private String userId;
+    private Integer userId;
     private String username;
     private String country;
     private int rank;

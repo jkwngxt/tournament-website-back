@@ -16,6 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode
 public class JoinAsStaffRelationshipPK implements Serializable {
-    private String userId;
+    private Integer userId;
     private UUID tournamentId;
 }
