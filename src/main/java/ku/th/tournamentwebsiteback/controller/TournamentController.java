@@ -39,7 +39,7 @@ public class TournamentController {
         return ResponseEntity.ok("Tournament created successfully");
     }
 
-    // Update a tournament
+    // Update the tournament
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateTournament(@PathVariable UUID id, @RequestBody UpdateTournamentRequest request) {
         tournamentService.updateTournament(id, request);
