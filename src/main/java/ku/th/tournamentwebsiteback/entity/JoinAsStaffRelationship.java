@@ -27,5 +27,5 @@ public class JoinAsStaffRelationship {
     private Tournament tournament;
 
     @OneToMany(mappedBy = "joinAsStaffRelationship")
-    List<Judge> judges;
+    private List<Judge> judges;
 }

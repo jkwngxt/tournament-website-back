@@ -3,6 +3,7 @@ package ku.th.tournamentwebsiteback.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 import java.util.List;
@@ -18,8 +19,11 @@ public class User {
     private String profileImageUrl;
 
     @OneToMany(mappedBy = "user")
-    List<JoinAsStaffRelationship> joinAsStaffRelationships;
+    private List<JoinAsStaffRelationship> joinAsStaffRelationships;
 
     @OneToMany(mappedBy = "user")
-    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+    private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+
+    @OneToOne(mappedBy = "user")
+    private Admin admin;
 }

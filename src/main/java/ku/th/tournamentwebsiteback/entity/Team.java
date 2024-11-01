@@ -16,7 +16,7 @@ public class Team {
     private String status;
 
     @OneToMany(mappedBy = "team")
-    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+    private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
     @ManyToOne
     @JoinColumn(name = "lobby_id")

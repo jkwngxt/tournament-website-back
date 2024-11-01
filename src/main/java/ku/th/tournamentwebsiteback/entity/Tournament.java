@@ -26,11 +26,11 @@ public class Tournament {
     private int expectedStaff;
 
     @OneToMany(mappedBy = "tournament")
-    List<JoinAsStaffRelationship> joinAsStaffRelationships;
+    private List<JoinAsStaffRelationship> joinAsStaffRelationships;
 
     @OneToMany(mappedBy = "tournament")
-    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+    private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
     @OneToMany(mappedBy = "tournament")
-    List<QualifierMatch> qualifierMatches;
+    private List<QualifierMatch> qualifierMatches;
 }

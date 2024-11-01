@@ -16,10 +16,10 @@ public class QualifierMatch {
     private ZonedDateTime closeLobbyDateTime;
 
     @OneToMany(mappedBy = "qualifierMatch")
-    List<Team> teams;
+    private List<Team> teams;
 
     @OneToMany(mappedBy = "qualifierMatch")
-    List<Judge> judges;
+    private List<Judge> judges;
 
     @ManyToOne
     @JoinColumn(name = "tournament_id")
