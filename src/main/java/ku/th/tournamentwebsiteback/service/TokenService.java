@@ -3,36 +3,51 @@ package ku.th.tournamentwebsiteback.service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class TokenService {
 
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256); // สร้าง key ที่มีความปลอดภัยเพียงพอ
+    @Value("${jwt.secret}")
+    private String secret;
+
+    private Key secretKey;
+
+    @PostConstruct
+    public void init() {
+        secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(Integer userId) {
-        Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
-                .setClaims(claims)
                 .setSubject(userId.toString())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 ชั่วโมง
-                .signWith(secretKey)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 3)) // 3 hours
+                .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
     public Integer extractUserId(String token) {
-        return Integer.parseInt(Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject());
+        try {
+            return Integer.parseInt(
+                    Jwts.parserBuilder()
+                            .setSigningKey(secretKey)
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody()
+                            .getSubject()
+            );
+        } catch (Exception e) {
+            // Log the error and handle it appropriately
+            System.err.println("Error parsing JWT token: " + e.getMessage());
+            throw new RuntimeException("Invalid JWT token", e);
+        }
     }
 
     public boolean isTokenValid(String token, Integer userId) {
@@ -48,4 +63,5 @@ public class TokenService {
                 .getExpiration()
                 .before(new Date());
     }
+
 }

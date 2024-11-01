@@ -5,10 +5,12 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.UUID;
+
 @Data
 @Entity
 public class Team {
     @Id
+    @GeneratedValue
     private UUID teamId;
     private String captainUserId;
     private String teamName;
@@ -16,7 +18,7 @@ public class Team {
     private String status;
 
     @OneToMany(mappedBy = "team")
-    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+    private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
     @ManyToOne
     @JoinColumn(name = "lobby_id")

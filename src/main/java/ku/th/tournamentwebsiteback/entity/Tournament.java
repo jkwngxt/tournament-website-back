@@ -1,7 +1,7 @@
 package ku.th.tournamentwebsiteback.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
@@ -9,10 +9,12 @@ import lombok.Data;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
+
 @Data
 @Entity
 public class Tournament {
     @Id
+    @GeneratedValue
     private UUID tournamentId;
     private String title;
     private String description;
@@ -26,11 +28,11 @@ public class Tournament {
     private int expectedStaff;
 
     @OneToMany(mappedBy = "tournament")
-    List<JoinAsStaffRelationship> joinAsStaffRelationships;
+    private List<JoinAsStaffRelationship> joinAsStaffRelationships;
 
     @OneToMany(mappedBy = "tournament")
-    List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
+    private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
     @OneToMany(mappedBy = "tournament")
-    List<QualifierMatch> qualifierMatches;
+    private List<QualifierMatch> qualifierMatches;
 }
