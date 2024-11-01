@@ -9,6 +9,7 @@ import java.util.UUID;
 @Entity
 public class Team {
     @Id
+    @GeneratedValue
     private UUID teamId;
     private String captainUserId;
     private String teamName;

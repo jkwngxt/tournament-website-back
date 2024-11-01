@@ -1,9 +1,6 @@
 package ku.th.tournamentwebsiteback.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Entity
 public class Tournament {
     @Id
+    @GeneratedValue
     private UUID tournamentId;
     private String title;
     private String description;

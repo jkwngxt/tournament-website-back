@@ -10,6 +10,7 @@ import java.util.UUID;
 @Entity
 public class QualifierMatch {
     @Id
+    @GeneratedValue
     private UUID lobbyId;
     private String lobbyName;
     private ZonedDateTime startLobbyDateTime;
