@@ -12,7 +12,6 @@ public class Team {
     @Id
     @GeneratedValue
     private UUID teamId;
-    private String captainUserId;
     private String teamName;
     private String profileImage;
     private String status;
@@ -23,4 +22,8 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "lobby_id")
     private QualifierMatch qualifierMatch;
+
+    @OneToOne
+    @JoinColumn(name = "captain_user_id")
+    private User user;
 }

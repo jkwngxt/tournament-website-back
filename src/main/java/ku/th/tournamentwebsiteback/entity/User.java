@@ -24,6 +24,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<JoinAsParticipantRelationship> joinAsParticipantRelationships;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", optional = true)
     private Admin admin;
+
+    @OneToOne(mappedBy = "user", optional = true)
+    private Team team;
+
 }

@@ -1,7 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
 import ku.th.tournamentwebsiteback.entity.Tournament;
-import ku.th.tournamentwebsiteback.repository.AdminRepository;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
 import ku.th.tournamentwebsiteback.service.TournamentService;
@@ -13,17 +12,14 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/tournament")
+@RequestMapping("/tournaments")
 public class TournamentController {
 
     @Autowired
     private TournamentService tournamentService;
 
-    @Autowired
-    private AdminRepository adminRepository;
-
     // Get all tournaments
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Tournament>> getTournaments() {
         List<Tournament> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);

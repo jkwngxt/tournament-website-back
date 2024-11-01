@@ -4,7 +4,6 @@ import ku.th.tournamentwebsiteback.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,9 +22,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/login", "/callback").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/tournaments").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/tournaments/add").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/tournaments/update/**").authenticated()
+                        .requestMatchers("/tournaments").permitAll()
+                        .requestMatchers("/tournaments/add").authenticated()
+                        .requestMatchers("/tournaments/update/**").authenticated()
+                        .requestMatchers("/teams").permitAll()
+                        .requestMatchers("/teams/**").permitAll()
+                        .requestMatchers("/tournaments/validate/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
