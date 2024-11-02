@@ -1,15 +1,26 @@
 package ku.th.tournamentwebsiteback.service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import ku.th.tournamentwebsiteback.constants.Roles;
+import ku.th.tournamentwebsiteback.constants.TokenConstants;
+import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.exception.InvalidTokenException;
+import ku.th.tournamentwebsiteback.exception.UserNotFoundException;
+import ku.th.tournamentwebsiteback.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class TokenService {
@@ -18,6 +29,10 @@ public class TokenService {
     private String secret;
 
     private Key secretKey;
+
+    @Autowired
+    private UserRepository userRepository;
+    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
     @PostConstruct
     public void init() {
@@ -28,40 +43,68 @@ public class TokenService {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 3)) // 3 hours
+                .setExpiration(new Date(System.currentTimeMillis() + TokenConstants.TOKEN_VALIDITY))
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public Integer extractUserId(String token) {
+    public boolean isTokenValid(String token, Integer userId) {
         try {
-            return Integer.parseInt(
-                    Jwts.parserBuilder()
-                            .setSigningKey(secretKey)
-                            .build()
-                            .parseClaimsJws(token)
-                            .getBody()
-                            .getSubject()
-            );
-        } catch (Exception e) {
-            // Log the error and handle it appropriately
-            System.err.println("Error parsing JWT token: " + e.getMessage());
-            throw new RuntimeException("Invalid JWT token", e);
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            Integer extractedUserId = Integer.parseInt(claims.getSubject());
+            return extractedUserId.equals(userId) && !claims.getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Error validating token", e);
+            throw new InvalidTokenException("Invalid JWT token", e);
         }
     }
 
-    public boolean isTokenValid(String token, Integer userId) {
-        return extractUserId(token).equals(userId) && !isTokenExpired(token);
+
+    public Integer extractUserId(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return Integer.parseInt(claims.getSubject());
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Error parsing JWT token", e);
+            throw new InvalidTokenException("Invalid JWT token", e);
+        }
     }
 
-    private boolean isTokenExpired(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
+    public long getExpirationTime(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getExpiration().getTime();
+        } catch (JwtException | IllegalArgumentException e) {
+            logger.error("Error getting token expiration time", e);
+            throw new InvalidTokenException("Invalid JWT token", e);
+        }
     }
 
+    public List<SimpleGrantedAuthority> getAuthoritiesByUserId(Integer userId) {
+        User user = getUserById(userId);
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        if (user.getAdmin() != null) {
+            authorities.add(new SimpleGrantedAuthority(Roles.ROLE_ADMIN));
+        } else {
+            authorities.add(new SimpleGrantedAuthority(Roles.ROLE_USER));
+        }
+        return authorities;
+    }
+
+    private User getUserById(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
+    }
 }

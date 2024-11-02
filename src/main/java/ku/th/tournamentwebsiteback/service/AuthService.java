@@ -43,7 +43,6 @@ public class AuthService {
     public Map<String, Object> processOAuthCallback(String code) {
         RestTemplate restTemplate = new RestTemplate();
 
-        // Create a MultiValueMap to represent form data
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("client_id", clientId);
         requestBody.add("client_secret", clientSecret);
@@ -51,22 +50,16 @@ public class AuthService {
         requestBody.add("grant_type", "authorization_code");
         requestBody.add("redirect_uri", redirectUri);
 
-        // Set the Content-Type header to application/x-www-form-urlencoded
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        // Create an HttpEntity with the headers and body
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        // Send the POST request
         ResponseEntity<Map> responseEntity = restTemplate.postForEntity(tokenUrl, requestEntity, Map.class);
         Map<String, Object> response = responseEntity.getBody();
         Map<String, Object> result = new HashMap<>();
 
         if (response != null && response.get("access_token") != null) {
             String accessToken = (String) response.get("access_token");
-
-            // Fetch data using osu! API
             String apiUrl = "https://osu.ppy.sh/api/v2/me/osu";
             HttpHeaders apiHeaders = new HttpHeaders();
             apiHeaders.set("Authorization", "Bearer " + accessToken);
@@ -76,7 +69,6 @@ public class AuthService {
             Map<String, Object> userData = userDataResponse.getBody();
 
             if (userData != null) {
-                // Extract user information and process as before
                 Integer userId = (Integer) userData.get("id");
                 String username = (String) userData.get("username");
                 String profileImageUrl = (String) userData.get("avatar_url");
@@ -94,10 +86,7 @@ public class AuthService {
                 user.setRank(globalRank);
                 user.setCountry(country);
 
-                // Save or update user in the database
                 userRepository.save(user);
-
-                // Generate a new JWT token
                 String jwtToken = tokenService.generateToken(userId);
 
                 result.put("status", "Login successful");

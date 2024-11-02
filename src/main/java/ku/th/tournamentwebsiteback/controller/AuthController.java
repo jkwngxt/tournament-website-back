@@ -31,5 +31,5 @@ public class AuthController {
     public Map<String, Object> callback(@RequestParam String code) {
         return authService.processOAuthCallback(code);
     }
-}
 
+}

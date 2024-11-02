@@ -137,7 +137,6 @@ public class QualifierMatchService {
             throw new BadRequestException("Staff is already registered in this qualifier match");
         }
 
-
         Judge judge = new Judge();
         judge.setId(new JudgePK(new JoinAsStaffRelationshipPK(userId, staffRelationship.getId().getTournamentId()), lobbyId));
         judge.setJoinAsStaffRelationship(staffRelationship);

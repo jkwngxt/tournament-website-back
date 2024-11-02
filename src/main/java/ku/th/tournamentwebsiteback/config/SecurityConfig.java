@@ -21,22 +21,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
-//                        .requestMatchers("/login", "/callback").permitAll()
-//
-//                        .requestMatchers("/tournaments").permitAll()
-//                        .requestMatchers("/tournaments/add").authenticated()
-//                        .requestMatchers("/tournaments/update/**").authenticated()
-//                        .requestMatchers("/tournaments/validate/**").authenticated()
-//                        .requestMatchers("/tournaments/**").permitAll()
-//
-//                        //ยังไม่จัดการสิทธิ์
-//                        .requestMatchers("/teams").permitAll()
-//                        .requestMatchers("/teams/**").permitAll()
-//                        .requestMatchers("/lobby/**").permitAll()
-                                .anyRequest().permitAll()
+                        .requestMatchers("/login", "/callback").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/tournaments/add", "/tournaments/update/**", "/tournaments/validate/**").authenticated()
+                        .requestMatchers("/teams").hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
-
