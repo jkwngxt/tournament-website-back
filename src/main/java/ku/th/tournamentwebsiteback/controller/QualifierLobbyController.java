@@ -1,6 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.DTO.QualifierMatchDTO;
+import ku.th.tournamentwebsiteback.dto.QualifierMatchDTO;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
 import ku.th.tournamentwebsiteback.service.QualifierMatchService;
 import org.springframework.beans.factory.annotation.Autowired;

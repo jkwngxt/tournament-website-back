@@ -1,4 +1,4 @@
-package ku.th.tournamentwebsiteback.DTO;
+package ku.th.tournamentwebsiteback.dto;
 
 import lombok.Data;
 

@@ -1,8 +1,8 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.DTO.JudgeDTO;
-import ku.th.tournamentwebsiteback.DTO.QualifierMatchDTO;
+import ku.th.tournamentwebsiteback.dto.JudgeDTO;
+import ku.th.tournamentwebsiteback.dto.QualifierMatchDTO;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
