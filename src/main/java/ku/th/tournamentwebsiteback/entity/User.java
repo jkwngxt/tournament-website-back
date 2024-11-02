@@ -32,7 +32,7 @@ public class User {
     private Admin admin;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "user", optional = true)
+    @OneToOne(mappedBy = "captain", optional = true)
     private Team team;
 
 }

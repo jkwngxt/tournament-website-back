@@ -1,5 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
+import ku.th.tournamentwebsiteback.dto.TeamDetailDTO;
 import ku.th.tournamentwebsiteback.entity.Team;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
 import ku.th.tournamentwebsiteback.service.TeamService;
@@ -23,8 +24,8 @@ public class TeamController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Team> getTeamById(@PathVariable UUID id) {
-        Team team = teamService.getTeamById(id);
+    public ResponseEntity<TeamDetailDTO> getTeamById(@PathVariable UUID id) {
+        TeamDetailDTO team = teamService.getTeamById(id);
         return team != null ? ResponseEntity.ok(team) : ResponseEntity.notFound().build();
     }
 

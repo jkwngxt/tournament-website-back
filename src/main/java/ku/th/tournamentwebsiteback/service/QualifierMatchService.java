@@ -1,7 +1,7 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.JudgeDTO;
+import ku.th.tournamentwebsiteback.dto.JudgeProfileDTO;
 import ku.th.tournamentwebsiteback.dto.QualifierMatchDTO;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
@@ -48,10 +48,10 @@ public class QualifierMatchService {
         List<Judge> judges = qualifierMatch.getJudges();
         for (Judge judge : judges) {
             qualifierMatchDTO.getJudges().clear();
-            JudgeDTO judgeDTO = new JudgeDTO();
-            judgeDTO.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
-            judgeDTO.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
-            qualifierMatchDTO.getJudges().add(judgeDTO);
+            JudgeProfileDTO judgeProfileDTO = new JudgeProfileDTO();
+            judgeProfileDTO.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
+            judgeProfileDTO.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
+            qualifierMatchDTO.getJudges().add(judgeProfileDTO);
         }
         return qualifierMatchDTO;
     }
@@ -91,7 +91,7 @@ public class QualifierMatchService {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
 
-        Team team = teamRepository.findByUserUserId(userId);
+        Team team = teamRepository.findByCaptainUserId(userId);
 
         if (team == null) {
             throw new BadRequestException("User is not a team captain in this tournament");
@@ -110,7 +110,7 @@ public class QualifierMatchService {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
 
-        Team team = teamRepository.findByUserUserId(userId);
+        Team team = teamRepository.findByCaptainUserId(userId);
 
         if (team == null) {
             throw new BadRequestException("User is not a team captain in this tournament");
