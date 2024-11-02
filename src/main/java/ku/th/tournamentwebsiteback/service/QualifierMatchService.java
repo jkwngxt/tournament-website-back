@@ -1,10 +1,12 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.Null;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
 import ku.th.tournamentwebsiteback.exception.BadRequestException;
+import ku.th.tournamentwebsiteback.exception.ForbiddenException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
 import ku.th.tournamentwebsiteback.response.QualifierMatchDetailResponse;
@@ -44,14 +46,14 @@ public class QualifierMatchService {
                 .collect(toList());
     }
 
-    public void createQualifierMatch(UUID tournamentId, QualifierMatchRequest request) {
+    public QualifierMatchDetailResponse createQualifierMatch(UUID tournamentId, QualifierMatchRequest request) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new EntityNotFoundException("Tournament not found with id: " + tournamentId));
 
         QualifierMatch qualifierMatch = modelMapper.map(request, QualifierMatch.class);
         qualifierMatch.setTournament(tournament);
 
-        qualifierMatchRepository.save(qualifierMatch);
+        return qualifierMatchToDto(qualifierMatchRepository.save(qualifierMatch));
     }
 
     public void deleteQualifierMatch(UUID lobbyId, Integer userId) {
@@ -60,6 +62,10 @@ public class QualifierMatchService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+
+        if (user.getAdmin() == null) {
+            throw new ForbiddenException("You do not have permission to delete this Qualifier Match.");
+        }
 
         // Remove qualifier match reference from teams
         List<Team> teams = qualifierMatch.getTeams();
@@ -166,5 +172,9 @@ public class QualifierMatchService {
         response.setJudges(userProfileResponses);
 
         return response;
+    }
+
+    public QualifierMatchDetailResponse findQualifierMatchesById(UUID id) {
+        return qualifierMatchToDto(qualifierMatchRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found")));
     }
 }

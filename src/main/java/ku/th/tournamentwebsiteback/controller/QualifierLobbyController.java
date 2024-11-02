@@ -19,10 +19,16 @@ public class QualifierLobbyController {
     @Autowired
     SecurityService securityService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<QualifierMatchDetailResponse> getQualifierMatchesByID(@PathVariable UUID id) {
+        QualifierMatchDetailResponse matches = qualifierMatchService.findQualifierMatchesById(id);
+        return ResponseEntity.ok(matches);
+    }
+
     @PostMapping("/tournaments/{tournamentId}")
-    public ResponseEntity<String> createQualifierMatch(@PathVariable UUID tournamentId, @RequestBody QualifierMatchRequest request) {
-        qualifierMatchService.createQualifierMatch(tournamentId, request);
-        return ResponseEntity.ok("Qualifier match has been successfully created.");
+    public ResponseEntity<QualifierMatchDetailResponse> createQualifierMatch(@PathVariable UUID tournamentId, @RequestBody QualifierMatchRequest request) {
+        QualifierMatchDetailResponse response = qualifierMatchService.createQualifierMatch(tournamentId, request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/tournaments/{tournamentId}")
@@ -31,7 +37,7 @@ public class QualifierLobbyController {
         return ResponseEntity.ok(matches);
     }
 
-    @DeleteMapping("/{lobbyId}")
+    @DeleteMapping("/{lobbyId}") //must be admin
     public ResponseEntity<String> deleteQualifierMatch(@PathVariable UUID lobbyId) {
         Integer userId = securityService.getCurrentUserId();
         qualifierMatchService.deleteQualifierMatch(lobbyId, userId);
@@ -40,7 +46,7 @@ public class QualifierLobbyController {
 
     @PostMapping("/{lobbyId}/teams/join")
     public ResponseEntity<String> joinQualifierMatchAsTeam(@PathVariable UUID lobbyId) {
-        Integer userId = securityService.getCurrentUserId();
+        Integer userId = 16;
         qualifierMatchService.joinQualifierMatchAsTeam(lobbyId, userId);
         return ResponseEntity.ok("Successfully joined the qualifier match as a team.");
     }
@@ -48,7 +54,7 @@ public class QualifierLobbyController {
 
     @PostMapping("/{lobbyId}/teams/leave")
     public ResponseEntity<String> leaveQualifierMatchAsTeam(@PathVariable UUID lobbyId) {
-        Integer userId = securityService.getCurrentUserId();
+        Integer userId = 16;
         qualifierMatchService.leaveQualifierMatchAsTeam(lobbyId, userId);
         return ResponseEntity.ok("Successfully left the qualifier match as a team.");
     }

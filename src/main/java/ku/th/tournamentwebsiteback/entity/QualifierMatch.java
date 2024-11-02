@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +26,7 @@ public class QualifierMatch {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "qualifierMatch")
-    private List<Judge> judges;
+    private List<Judge> judges = new ArrayList<>();;
 
     @JsonBackReference
     @ManyToOne

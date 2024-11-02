@@ -25,21 +25,21 @@ public class ParticipantController {
     }
 
     // get all participation by specific tournament id
-    @GetMapping("/tournament/{tournamentId}")
+    @GetMapping("/tournaments/{tournamentId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByTournamentId(@PathVariable UUID tournamentId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByTournamentId(tournamentId);
         return ResponseEntity.ok(participationList);
     }
 
     // get all participation by specific user id
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByUserId(@PathVariable Integer userId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByUserId(userId);
         return ResponseEntity.ok(participationList);
     }
 
     // get all participation by specific team id
-    @GetMapping("/team/{teamId}")
+    @GetMapping("/teams/{teamId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByTeamId(@PathVariable UUID teamId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByTeamId(teamId);
         return ResponseEntity.ok(participationList);

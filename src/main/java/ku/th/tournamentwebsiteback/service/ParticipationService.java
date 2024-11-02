@@ -36,7 +36,13 @@ public class ParticipationService {
     private List<ParticipationResponse> convertToDTO(List<JoinAsParticipantRelationship> participationList) {
         return participationList
                 .stream()
-                .map(participation->modelMapper.map(participation, ParticipationResponse.class))
+                .map(participation -> {
+                    ParticipationResponse participationResponse = new ParticipationResponse();
+                    participationResponse.setTeamId(participation.getId().getTeamId());
+                    participationResponse.setUserId(participation.getUser().getUserId());
+                    participationResponse.setTournamentId(participation.getId().getTournamentId());
+                    return participationResponse;
+                })
                 .toList();
     }
 }
