@@ -1,5 +1,7 @@
 package ku.th.tournamentwebsiteback.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import ku.th.tournamentwebsiteback.entity.User;
 import ku.th.tournamentwebsiteback.repository.UserRepository;
 import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,9 @@ public class UserService {
     }
 
     public UserProfileResponse getUserByUserId(Integer id) {
-        return modelMapper.map(userRepository.findById(id), UserProfileResponse.class);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        return modelMapper.map(user, UserProfileResponse.class);
     }
+
 }

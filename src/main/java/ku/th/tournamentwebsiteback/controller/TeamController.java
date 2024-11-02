@@ -14,59 +14,58 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/teams")
 public class TeamController {
-    @Autowired
-    TeamService teamService;
-    @Autowired
-    SecurityService securityService;
 
-    @GetMapping("/teams")
+    private final TeamService teamService;
+    private final SecurityService securityService;
+
+    @Autowired
+    public TeamController(TeamService teamService, SecurityService securityService) {
+        this.teamService = teamService;
+        this.securityService = securityService;
+    }
+
+    @GetMapping
     public ResponseEntity<List<TeamDetailResponse>> getAllTeams() {
         List<TeamDetailResponse> teams = teamService.getAllTeams();
         return ResponseEntity.ok(teams);
     }
 
-    @GetMapping("/teams/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TeamDetailResponse> getTeamById(@PathVariable UUID id) {
         TeamDetailResponse team = teamService.getTeamById(id);
         return ResponseEntity.ok(team);
     }
 
-    // Create team
-    @PostMapping("/teams")
+    @PostMapping
     public ResponseEntity<String> createTeam(@RequestBody TeamRequest request) {
         teamService.createTeam(request);
-        return ResponseEntity.ok("Team created successfully");
+        return ResponseEntity.status(201).body("Team created successfully");
     }
 
-    // Validate team = {rejected/approved}
-    @PutMapping("/teams/{id}/validate")
+    @PutMapping("/{id}/validate")
     public ResponseEntity<String> validateTeam(@PathVariable UUID id, @RequestBody ValidateTeamRequest request) {
         teamService.validateTeam(id, request);
         return ResponseEntity.ok("Team validated successfully");
     }
 
-    // Gat all team detail by user id
-    @GetMapping("/teams/user/{id}")
-    public ResponseEntity<List<TeamProfileResponse>> getAllTeamByUserId(@PathVariable Integer id) {
-        List<TeamProfileResponse> team = teamService.getAllTeamDetailByUserId(id);
-        return ResponseEntity.ok(team);
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<TeamProfileResponse>> getAllTeamsByUserId(@PathVariable Integer userId) {
+        List<TeamProfileResponse> teams = teamService.getAllTeamDetailByUserId(userId);
+        return ResponseEntity.ok(teams);
     }
 
-    // Get all teams in Tournament
-    @GetMapping("/tournaments/{tournamentId}/teams")
-    public ResponseEntity<List<TeamDetailResponse>> getTeamByTournamentId(@PathVariable UUID tournamentId) {
+    @GetMapping("/tournaments/{tournamentId}")
+    public ResponseEntity<List<TeamDetailResponse>> getTeamsByTournamentId(@PathVariable UUID tournamentId) {
         List<TeamDetailResponse> teams = teamService.getTeamByTournamentId(tournamentId);
         return ResponseEntity.ok(teams);
     }
 
-    // Get team's user in specific tournament
-    @GetMapping("/tournaments/{tournamentId}/teams/me")
+    @GetMapping("/tournaments/{tournamentId}/me")
     public ResponseEntity<TeamDetailResponse> getTeamByTournamentIdAndUserId(@PathVariable UUID tournamentId) {
         Integer userId = securityService.getCurrentUserId();
         TeamDetailResponse team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);
         return ResponseEntity.ok(team);
     }
-
-
 }
