@@ -17,14 +17,10 @@ import java.util.UUID;
 @RequestMapping("/teams")
 public class TeamController {
 
-    private final TeamService teamService;
-    private final SecurityService securityService;
-
     @Autowired
-    public TeamController(TeamService teamService, SecurityService securityService) {
-        this.teamService = teamService;
-        this.securityService = securityService;
-    }
+    private TeamService teamService;
+    @Autowired
+    private SecurityService securityService;
 
     @GetMapping
     public ResponseEntity<List<TeamDetailResponse>> getAllTeams() {
@@ -39,9 +35,9 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTeam(@RequestBody TeamRequest request) {
-        teamService.createTeam(request);
-        return ResponseEntity.status(201).body("Team created successfully");
+    public ResponseEntity<TeamDetailResponse> createTeam(@RequestBody TeamRequest request) {
+        TeamDetailResponse team = teamService.createTeam(request);
+        return ResponseEntity.status(201).body(team);
     }
 
     @PutMapping("/{id}/validate")

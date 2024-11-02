@@ -42,7 +42,9 @@ public class Tournament {
 
     public boolean isInTeamRegisPeriod() {
         ZonedDateTime now = ZonedDateTime.now();
-        return (startTeamRegisDateTime.isBefore(now) || startTeamRegisDateTime.isEqual(now))
-                && closeTeamRegisDateTime.isAfter(now);
+        ZonedDateTime start = startTeamRegisDateTime.withZoneSameInstant(now.getZone());
+        ZonedDateTime close = closeTeamRegisDateTime.withZoneSameInstant(now.getZone());
+        return (start.isBefore(now) || start.isEqual(now)) && close.isAfter(now);
     }
+
 }

@@ -5,6 +5,7 @@ import ku.th.tournamentwebsiteback.entity.JoinAsParticipantRelationship;
 import ku.th.tournamentwebsiteback.entity.Team;
 import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
 import ku.th.tournamentwebsiteback.exception.BadRequestException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
@@ -70,18 +71,22 @@ public class TeamService {
         return toDetailDTO(team);
     }
 
-    public void createTeam(TeamRequest request) {
+    public TeamDetailResponse createTeam(TeamRequest request) {
         Tournament tournament = getTournament(request.getTournamentId());
         validateTeamRegistrationPeriod(tournament);
 
-        int totalMembers = request.getMemberIdList().size() + 1; // +1 สำหรับกัปตัน
+        if (teamRepository.existsByTeamNameAndJoinAsParticipantRelationshipsTournamentTournamentId(request.getTeamName(), request.getTournamentId())) {
+            throw new BadRequestException("A team with the name '" + request.getTeamName() + "' already exists in this tournament.");
+        }
+
+        int totalMembers = request.getMemberIdList().size() + 1;
         validateTeamMemberCount(totalMembers, tournament);
 
         User captain = getUserById(request.getCaptainUserId());
         List<User> members = getValidTeamMembers(request, tournament, captain);
 
         Team team = buildTeam(request, captain, members, tournament);
-        teamRepository.save(team);
+        return toDetailDTO(team);
     }
 
     private Tournament getTournament(UUID tournamentId) {
@@ -125,21 +130,40 @@ public class TeamService {
         Team team = modelMapper.map(request, Team.class);
         team.setCaptain(captain);
 
+        team = teamRepository.save(team);
+
+        Team finalTeam = team;
         List<JoinAsParticipantRelationship> participants = members.stream()
-                .map(member -> createParticipantRelationship(member, team, tournament))
+                .map(member -> createParticipantRelationship(member, finalTeam, tournament))
                 .collect(Collectors.toList());
+
         team.setJoinAsParticipantRelationships(participants);
+
         participantRepository.saveAll(participants);
+
         return team;
     }
 
+
+
     private JoinAsParticipantRelationship createParticipantRelationship(User member, Team team, Tournament tournament) {
         JoinAsParticipantRelationship participant = new JoinAsParticipantRelationship();
+
+        JoinAsParticipantsRelationshipPK pk = new JoinAsParticipantsRelationshipPK(
+                member.getUserId(),
+                team.getTeamId(),
+                tournament.getTournamentId()
+        );
+        participant.setId(pk);
+
         participant.setTeam(team);
         participant.setUser(member);
         participant.setTournament(tournament);
+
         return participant;
     }
+
+
 
     private void validateUserEligibility(User member, Tournament tournament) {
         if (participantRepository.existsByUserAndTournament(member, tournament)) {
