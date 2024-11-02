@@ -1,13 +1,12 @@
 package ku.th.tournamentwebsiteback.controller;
 
 import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
-import ku.th.tournamentwebsiteback.exception.UnauthorizedException;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
+import ku.th.tournamentwebsiteback.service.SecurityService;
 import ku.th.tournamentwebsiteback.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +16,8 @@ import java.util.UUID;
 public class TeamController {
     @Autowired
     TeamService teamService;
+    @Autowired
+    SecurityService securityService;
 
     @GetMapping("/teams")
     public ResponseEntity<List<TeamDetailResponse>> getAllTeams() {
@@ -54,17 +55,8 @@ public class TeamController {
     // Get team's user in specific tournament
     @GetMapping("/tournaments/{tournamentId}/teams/me")
     public ResponseEntity<TeamDetailResponse> getTeamByTournamentIdAndUserId(@PathVariable UUID tournamentId) {
-        Integer userId = getCurrentUserId();
+        Integer userId = securityService.getCurrentUserId();
         TeamDetailResponse team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);
         return ResponseEntity.ok(team);
-    }
-
-    private Integer getCurrentUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof Integer) {
-            return (Integer) principal;
-        } else {
-            throw new UnauthorizedException("Invalid user principal.");
-        }
     }
 }
