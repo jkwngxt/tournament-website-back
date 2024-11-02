@@ -72,10 +72,12 @@ public class TeamService {
     public void createTeam(TeamRequest request) {
         Tournament tournament = getTournament(request.getTournamentId());
         validateTeamRegistrationPeriod(tournament);
-        validateTeamMemberCount(request, tournament);
+
+        int totalMembers = request.getMemberIdList().size() + 1; // +1 สำหรับกัปตัน
+        validateTeamMemberCount(totalMembers, tournament);
 
         User captain = getUserById(request.getCaptainUserId());
-        List<User> members = getValidTeamMembers(request, tournament);
+        List<User> members = getValidTeamMembers(request, tournament, captain);
 
         Team team = buildTeam(request, captain, members, tournament);
         teamRepository.save(team);
@@ -92,10 +94,10 @@ public class TeamService {
         }
     }
 
-    private void validateTeamMemberCount(TeamRequest request, Tournament tournament) {
-        if (request.getMemberIdList().size() != tournament.getTeamMemberAmount()) {
+    private void validateTeamMemberCount(int totalMembers, Tournament tournament) {
+        if (totalMembers != tournament.getTeamMemberAmount()) {
             throw new BadRequestException("Invalid team member count. Expected: "
-                    + tournament.getTeamMemberAmount() + ", but got: " + request.getMemberIdList().size());
+                    + tournament.getTeamMemberAmount() + ", but got: " + totalMembers);
         }
     }
 
@@ -104,8 +106,12 @@ public class TeamService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
     }
 
-    private List<User> getValidTeamMembers(TeamRequest request, Tournament tournament) {
+    private List<User> getValidTeamMembers(TeamRequest request, Tournament tournament, User captain) {
         List<User> members = new ArrayList<>();
+
+        validateUserEligibility(captain, tournament);
+        members.add(captain);
+
         for (Integer userId : request.getMemberIdList()) {
             User member = getUserById(userId);
             validateUserEligibility(member, tournament);
@@ -117,6 +123,7 @@ public class TeamService {
     private Team buildTeam(TeamRequest request, User captain, List<User> members, Tournament tournament) {
         Team team = modelMapper.map(request, Team.class);
         team.setCaptain(captain);
+
         List<JoinAsParticipantRelationship> participants = members.stream()
                 .map(member -> createParticipantRelationship(member, team, tournament))
                 .collect(Collectors.toList());
