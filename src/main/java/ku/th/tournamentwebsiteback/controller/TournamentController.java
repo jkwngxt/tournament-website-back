@@ -50,9 +50,9 @@ public class TournamentController {
 
     // Create a tournament
     @PostMapping
-    public ResponseEntity<String> createTournament(@RequestBody TournamentRequest request) {
-        tournamentService.createTournament(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Tournament created successfully");
+    public ResponseEntity<TournamentProfileResponse> createTournament(@RequestBody TournamentRequest request) {
+        TournamentProfileResponse response = tournamentService.createTournament(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // Update the tournament

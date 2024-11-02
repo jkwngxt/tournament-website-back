@@ -13,7 +13,7 @@ public class UpdateTournamentRequest {
     private ZonedDateTime startStaffRegisDateTime;
     private ZonedDateTime startTeamRegisDateTime;
     private ZonedDateTime closeTeamRegisDateTime;
-    private int teamMemberAmount;
-    private boolean isAcceptInternationalStaff;
-    private int expectedStaff;
+    private Integer teamMemberAmount;
+    private Boolean isAcceptInternationalStaff;
+    private Integer expectedStaff;
 }

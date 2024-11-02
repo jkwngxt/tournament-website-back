@@ -21,19 +21,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/login", "/callback").permitAll()
-
-                        .requestMatchers("/tournaments").permitAll()
-                        .requestMatchers("/tournaments/add").authenticated()
-                        .requestMatchers("/tournaments/update/**").authenticated()
-                        .requestMatchers("/tournaments/validate/**").authenticated()
-                        .requestMatchers("/tournaments/**").permitAll()
-
-                        //ยังไม่จัดการสิทธิ์
-                        .requestMatchers("/teams").permitAll()
-                        .requestMatchers("/teams/**").permitAll()
-                        .requestMatchers("/lobby/**").permitAll()
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/login", "/callback").permitAll()
+//
+//                        .requestMatchers("/tournaments").permitAll()
+//                        .requestMatchers("/tournaments/add").authenticated()
+//                        .requestMatchers("/tournaments/update/**").authenticated()
+//                        .requestMatchers("/tournaments/validate/**").authenticated()
+//                        .requestMatchers("/tournaments/**").permitAll()
+//
+//                        //ยังไม่จัดการสิทธิ์
+//                        .requestMatchers("/teams").permitAll()
+//                        .requestMatchers("/teams/**").permitAll()
+//                        .requestMatchers("/lobby/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
