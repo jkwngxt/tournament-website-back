@@ -16,7 +16,6 @@ public interface TeamRepository extends JpaRepository<Team, UUID> {
 
     List<Team> findByJoinAsParticipantRelationshipsTournamentTournamentId(UUID id);
 
-    Team findByJoinAsParticipantRelationshipsUserUserId(Integer userId);
+    Team findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(Integer userId, UUID id);
 
-    Optional<Team> findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(Integer userId, UUID id);
 }

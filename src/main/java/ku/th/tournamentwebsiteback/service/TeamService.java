@@ -68,9 +68,7 @@ public class TeamService {
     }
 
     public TeamDetailDTO getTeamByTournamentIdAndUserId(Integer userId, UUID id) {
-        Team team = teamRepository.findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(userId, id)
-                .orElse(null);
-
+        Team team = teamRepository.findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(userId, id);
 
         if(team == null) {
             return null;
