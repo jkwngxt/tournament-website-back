@@ -14,4 +14,6 @@ import java.util.UUID;
 @Repository
 public interface JoinAsStaffRepository extends JpaRepository<Team, UUID> {
     boolean existsByUserAndTournament(User user, Tournament tournament);
+
+    JoinAsStaffRelationship findByUserAndTournament(User user, Tournament tournament);
 }

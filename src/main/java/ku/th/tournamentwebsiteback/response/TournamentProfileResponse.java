@@ -6,7 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
-public class TournamentDTO {
+public class TournamentProfileDTO {
     private UUID tournamentId;
     private String title;
     private String description;

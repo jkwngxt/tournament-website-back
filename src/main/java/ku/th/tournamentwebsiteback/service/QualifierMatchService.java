@@ -2,7 +2,7 @@ package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.dto.JudgeProfileDTO;
-import ku.th.tournamentwebsiteback.dto.QualifierMatchDTO;
+import ku.th.tournamentwebsiteback.dto.QualifierMatchDetailDTO;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
@@ -35,7 +35,7 @@ public class QualifierMatchService {
     JoinAsStaffRepository joinAsStaffRepository;
 
 
-    public List<QualifierMatchDTO> findQualifierMatchesByTournamentId(UUID tournamentId) {
+    public List<QualifierMatchDetailDTO> findQualifierMatchesByTournamentId(UUID tournamentId) {
 
         List<QualifierMatch> matches = qualifierMatchRepository.findByTournamentTournamentId(tournamentId);
         return  matches.stream()
@@ -43,17 +43,17 @@ public class QualifierMatchService {
                 .collect(toList());
     }
 
-    public QualifierMatchDTO qualifierMatchToDto(QualifierMatch qualifierMatch) {
-        QualifierMatchDTO qualifierMatchDTO = modelMapper.map(qualifierMatch, QualifierMatchDTO.class);
+    public QualifierMatchDetailDTO qualifierMatchToDto(QualifierMatch qualifierMatch) {
+        QualifierMatchDetailDTO qualifierMatchDetailDTO = modelMapper.map(qualifierMatch, QualifierMatchDetailDTO.class);
         List<Judge> judges = qualifierMatch.getJudges();
         for (Judge judge : judges) {
-            qualifierMatchDTO.getJudges().clear();
+            qualifierMatchDetailDTO.getJudges().clear();
             JudgeProfileDTO judgeProfileDTO = new JudgeProfileDTO();
             judgeProfileDTO.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
             judgeProfileDTO.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
-            qualifierMatchDTO.getJudges().add(judgeProfileDTO);
+            qualifierMatchDetailDTO.getJudges().add(judgeProfileDTO);
         }
-        return qualifierMatchDTO;
+        return qualifierMatchDetailDTO;
     }
 
     public void createLobby(QualifierMatchRequest request) {

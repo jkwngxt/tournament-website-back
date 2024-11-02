@@ -1,7 +1,7 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.TournamentDTO;
+import ku.th.tournamentwebsiteback.dto.TournamentProfileDTO;
 import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.repository.TournamentRepository;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
@@ -28,14 +28,14 @@ public class TournamentService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<TournamentDTO> getAllTournaments() {
+    public List<TournamentProfileDTO> getAllTournaments() {
         return tournamentRepository.findAll()
                 .stream()
                 .map(this::tournamentToDto)
                 .collect(toList());
     }
 
-    public TournamentDTO getTournamentById(UUID id) {
+    public TournamentProfileDTO getTournamentById(UUID id) {
         Tournament tournament = tournamentRepository.findById(id).orElse(null);
         if (tournament == null) {
             return null;
@@ -56,12 +56,12 @@ public class TournamentService {
         tournamentRepository.save(existingTournament);
     }
 
-    public TournamentDTO getLatestTournament() {
+    public TournamentProfileDTO getLatestTournament() {
         Optional<Tournament> latestTournament = tournamentRepository.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startDate"))).stream().findFirst();
         return latestTournament.map(this::tournamentToDto).orElse(null);
     }
 
-    public List<TournamentDTO> getCurrentTournament() {
+    public List<TournamentProfileDTO> getCurrentTournament() {
         ZonedDateTime now = ZonedDateTime.now();
 
         return tournamentRepository.findAll()
@@ -72,7 +72,7 @@ public class TournamentService {
                 .collect(Collectors.toList());
     }
 
-    public TournamentDTO tournamentToDto(Tournament tournament) {
-        return modelMapper.map(tournament, TournamentDTO.class);
+    public TournamentProfileDTO tournamentToDto(Tournament tournament) {
+        return modelMapper.map(tournament, TournamentProfileDTO.class);
     }
 }

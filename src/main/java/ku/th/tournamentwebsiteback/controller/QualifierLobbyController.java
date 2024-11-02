@@ -1,6 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.dto.QualifierMatchDTO;
+import ku.th.tournamentwebsiteback.dto.QualifierMatchDetailDTO;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
 import ku.th.tournamentwebsiteback.service.QualifierMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,8 @@ public class QualifierLobbyController {
     }
 
     @GetMapping("/{tournamentId}")
-    public ResponseEntity<List<QualifierMatchDTO>> getQualifierMatches(@PathVariable UUID tournamentId) {
-        List<QualifierMatchDTO> matches = qualifierMatchService.findQualifierMatchesByTournamentId(tournamentId);
+    public ResponseEntity<List<QualifierMatchDetailDTO>> getQualifierMatches(@PathVariable UUID tournamentId) {
+        List<QualifierMatchDetailDTO> matches = qualifierMatchService.findQualifierMatchesByTournamentId(tournamentId);
         return ResponseEntity.ok(matches);
     }
 
