@@ -1,7 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
 import ku.th.tournamentwebsiteback.dto.TournamentDTO;
-import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
 import ku.th.tournamentwebsiteback.service.TournamentService;
@@ -24,6 +23,20 @@ public class TournamentController {
     public ResponseEntity<List<TournamentDTO>> getTournaments() {
         List<TournamentDTO> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);
+    }
+
+    // Get latest tournaments
+    @GetMapping("/latest")
+    public ResponseEntity<TournamentDTO> getLatestTournament() {
+        TournamentDTO tournament = tournamentService.getLatestTournament();
+        return tournament!=null? ResponseEntity.ok(tournament): ResponseEntity.notFound().build();
+    }
+
+    // Get current tournaments
+    @GetMapping("/current")
+    public ResponseEntity<List<TournamentDTO>> getCurrentTournament() {
+        List<TournamentDTO> tournaments = tournamentService.getCurrentTournament();
+        return tournaments.isEmpty()? ResponseEntity.ok(tournaments): ResponseEntity.notFound().build();
     }
 
     // Get a tournament by ID

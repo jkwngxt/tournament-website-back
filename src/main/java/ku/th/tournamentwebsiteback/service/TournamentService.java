@@ -8,10 +8,15 @@ import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -39,10 +44,6 @@ public class TournamentService {
         return tournamentToDto(tournament);
     }
 
-    public TournamentDTO tournamentToDto(Tournament tournament) {
-        return modelMapper.map(tournament, TournamentDTO.class);
-    }
-
     public void createTournament(TournamentRequest request) {
         Tournament tournament = modelMapper.map(request, Tournament.class);
         tournamentRepository.save(tournament);
@@ -53,5 +54,25 @@ public class TournamentService {
                 .orElseThrow(() -> new EntityNotFoundException("Tournament not found"));
         modelMapper.map(request, existingTournament);
         tournamentRepository.save(existingTournament);
+    }
+
+    public TournamentDTO getLatestTournament() {
+        Optional<Tournament> latestTournament = tournamentRepository.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startDate"))).stream().findFirst();
+        return latestTournament.map(this::tournamentToDto).orElse(null);
+    }
+
+    public List<TournamentDTO> getCurrentTournament() {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        return tournamentRepository.findAll()
+                .stream()
+                .filter(tournament -> tournament.getStartQualifierDateTime().isBefore(now) &&
+                        tournament.getEndDateTime().isAfter(now))
+                .map(this::tournamentToDto)
+                .collect(Collectors.toList());
+    }
+
+    public TournamentDTO tournamentToDto(Tournament tournament) {
+        return modelMapper.map(tournament, TournamentDTO.class);
     }
 }
