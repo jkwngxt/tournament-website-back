@@ -1,8 +1,8 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.response.TournamentProfileResponse;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
+import ku.th.tournamentwebsiteback.response.TournamentProfileResponse;
 import ku.th.tournamentwebsiteback.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class TournamentController {
     @GetMapping("/latest")
     public ResponseEntity<TournamentProfileResponse> getLatestTournament() {
         TournamentProfileResponse tournament = tournamentService.getLatestTournament();
-        return tournament!=null? ResponseEntity.ok(tournament): ResponseEntity.notFound().build();
+        return tournament != null ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
     }
 
     // Get current tournaments

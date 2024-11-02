@@ -4,7 +4,10 @@ import ku.th.tournamentwebsiteback.response.ParticipationResponse;
 import ku.th.tournamentwebsiteback.service.ParticipationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,21 +28,21 @@ public class ParticipantController {
     }
 
     // get all participation by specific tournament id
-    @GetMapping("/tournaments/{tournamentId}")
+    @GetMapping("/tournament/{tournamentId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByTournamentId(@PathVariable UUID tournamentId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByTournamentId(tournamentId);
         return ResponseEntity.ok(participationList);
     }
 
     // get all participation by specific user id
-    @GetMapping("/users/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByUserId(@PathVariable Integer userId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByUserId(userId);
         return ResponseEntity.ok(participationList);
     }
 
     // get all participation by specific team id
-    @GetMapping("/teams/{teamId}")
+    @GetMapping("/team/{teamId}")
     public ResponseEntity<List<ParticipationResponse>> getParticipationByTeamId(@PathVariable UUID teamId) {
         List<ParticipationResponse> participationList = participationService.getAllParticipationByTeamId(teamId);
         return ResponseEntity.ok(participationList);

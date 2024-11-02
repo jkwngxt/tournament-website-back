@@ -11,7 +11,9 @@ import java.util.UUID;
 
 public interface JoinAsParticipantRepository extends JpaRepository<JoinAsParticipantRelationship, JoinAsParticipantsRelationshipPK> {
     boolean existsByUserAndTournament(User user, Tournament tournament);
+
     List<JoinAsParticipantRelationship> findByUserUserId(Integer userId);
+
     List<JoinAsParticipantRelationship> findByTournamentTournamentId(UUID tournamentId);
 
     List<JoinAsParticipantRelationship> findByTeamTeamId(UUID teamId);

@@ -1,12 +1,13 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.exception.UnauthorizedException;
 import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import ku.th.tournamentwebsiteback.service.SecurityService;
 import ku.th.tournamentwebsiteback.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

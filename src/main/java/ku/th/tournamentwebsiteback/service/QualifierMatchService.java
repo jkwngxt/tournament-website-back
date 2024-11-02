@@ -1,7 +1,6 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.Null;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
@@ -36,7 +35,6 @@ public class QualifierMatchService {
     private JoinAsStaffRepository joinAsStaffRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
-
 
 
     public List<QualifierMatchDetailResponse> findQualifierMatchesByTournamentId(UUID tournamentId) {

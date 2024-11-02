@@ -1,8 +1,8 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
+import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
 import ku.th.tournamentwebsiteback.response.TeamProfileResponse;
 import ku.th.tournamentwebsiteback.service.SecurityService;
 import ku.th.tournamentwebsiteback.service.TeamService;
@@ -46,19 +46,19 @@ public class TeamController {
         return ResponseEntity.ok("Team validated successfully");
     }
 
-    @GetMapping("/users/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<List<TeamProfileResponse>> getAllTeamsByUserId(@PathVariable Integer userId) {
         List<TeamProfileResponse> teams = teamService.getAllTeamDetailByUserId(userId);
         return ResponseEntity.ok(teams);
     }
 
-    @GetMapping("/tournaments/{tournamentId}")
+    @GetMapping("/tournament/{tournamentId}")
     public ResponseEntity<List<TeamDetailResponse>> getTeamsByTournamentId(@PathVariable UUID tournamentId) {
         List<TeamDetailResponse> teams = teamService.getTeamByTournamentId(tournamentId);
         return ResponseEntity.ok(teams);
     }
 
-    @GetMapping("/tournaments/{tournamentId}/me")
+    @GetMapping("/tournament/{tournamentId}/me")
     public ResponseEntity<TeamDetailResponse> getTeamByTournamentIdAndUserId(@PathVariable UUID tournamentId) {
         Integer userId = securityService.getCurrentUserId();
         TeamDetailResponse team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);

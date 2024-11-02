@@ -26,7 +26,7 @@ public class QualifierMatch {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "qualifierMatch")
-    private List<Judge> judges = new ArrayList<>();;
+    private List<Judge> judges = new ArrayList<>();
 
     @JsonBackReference
     @ManyToOne

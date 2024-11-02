@@ -145,7 +145,6 @@ public class TeamService {
     }
 
 
-
     private JoinAsParticipantRelationship createParticipantRelationship(User member, Team team, Tournament tournament) {
         JoinAsParticipantRelationship participant = new JoinAsParticipantRelationship();
 
@@ -162,7 +161,6 @@ public class TeamService {
 
         return participant;
     }
-
 
 
     private void validateUserEligibility(User member, Tournament tournament) {

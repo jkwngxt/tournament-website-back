@@ -33,7 +33,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/teams").permitAll()
 //                        .requestMatchers("/teams/**").permitAll()
 //                        .requestMatchers("/lobby/**").permitAll()
-                        .anyRequest().permitAll()
+                                .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
