@@ -1,7 +1,6 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.QualifierMatchProfileDTO;
 import ku.th.tournamentwebsiteback.dto.TeamDetailDTO;
 import ku.th.tournamentwebsiteback.dto.UserProfileDTO;
 import ku.th.tournamentwebsiteback.entity.JoinAsParticipantRelationship;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamService {
@@ -27,8 +27,8 @@ public class TeamService {
     @Autowired
     UserRepository userRepository;
 
-    public List<Team> getAllTeams() {
-        return teamRepository.findAll();
+    public List<TeamDetailDTO> getAllTeams() {
+        return teamRepository.findAll().stream().map(this::toDetailDTO).collect(Collectors.toList());
     }
 
     public TeamDetailDTO getTeamById(UUID id) {
@@ -37,6 +37,23 @@ public class TeamService {
             return null;
         }
         return toDetailDTO(team);
+    }
+
+    public void createTeam(TeamRequest request) {
+        Team team = modelMapper.map(request, Team.class);
+        teamRepository.save(team);
+    }
+
+    public void validateTeam(UUID teamId, ValidateTeamRequest request) {
+        Team existingTournament = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
+        modelMapper.map(request, existingTournament);
+        teamRepository.save(existingTournament);
+    }
+
+    public List<TeamDetailDTO> getTeamByTournamentId(UUID id) {
+        List<Team> teams = teamRepository.findByJoinAsParticipantRelationshipsTournamentTournamentId(id);
+        return teams.stream().map(this::toDetailDTO).collect(Collectors.toList());
     }
 
     public TeamDetailDTO toDetailDTO(Team team) {
@@ -50,15 +67,15 @@ public class TeamService {
         return teamDetailDTO;
     }
 
-    public void createTeam(TeamRequest request) {
-        Team team = modelMapper.map(request, Team.class);
-        teamRepository.save(team);
-    }
+    public TeamDetailDTO getTeamByTournamentIdAndUserId(Integer userId, UUID id) {
+        Team team = teamRepository.findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(userId, id)
+                .orElse(null);
 
-    public void validateTeam(UUID teamId, ValidateTeamRequest request) {
-        Team existingTournament = teamRepository.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
-        modelMapper.map(request, existingTournament);
-        teamRepository.save(existingTournament);
+
+        if(team == null) {
+            return null;
+        }
+
+        return toDetailDTO(team);
     }
 }
