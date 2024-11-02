@@ -1,6 +1,7 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import ku.th.tournamentwebsiteback.dto.TournamentDTO;
 import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.repository.TournamentRepository;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class TournamentService {
     @Autowired
@@ -20,12 +23,24 @@ public class TournamentService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<Tournament> getAllTournaments() {
-        return tournamentRepository.findAll();
+    public List<TournamentDTO> getAllTournaments() {
+        return tournamentRepository.findAll()
+                .stream()
+                .map(this::tournamentToDto)
+                .collect(toList());
     }
 
-    public Tournament getTournamentById(UUID id) {
-        return tournamentRepository.findById(id).orElse(null);
+    public TournamentDTO getTournamentById(UUID id) {
+        Tournament tournament = tournamentRepository.findById(id).orElse(null);
+        if (tournament == null) {
+            return null;
+        }
+
+        return tournamentToDto(tournament);
+    }
+
+    public TournamentDTO tournamentToDto(Tournament tournament) {
+        return modelMapper.map(tournament, TournamentDTO.class);
     }
 
     public void createTournament(TournamentRequest request) {

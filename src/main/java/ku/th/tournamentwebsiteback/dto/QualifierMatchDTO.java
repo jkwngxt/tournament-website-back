@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 public class QualifierMatchDTO {
     private UUID lobbyId;
+    private String lobbyName;
     private ZonedDateTime startLobbyDateTime;
     private ZonedDateTime closeLobbyDateTime;
     private List<JudgeDTO> judges;
