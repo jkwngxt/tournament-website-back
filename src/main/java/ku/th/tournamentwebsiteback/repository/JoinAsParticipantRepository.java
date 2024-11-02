@@ -6,9 +6,11 @@ import ku.th.tournamentwebsiteback.entity.User;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface JoinAsParticipantRepository extends JpaRepository<JoinAsParticipantRelationship, JoinAsParticipantsRelationshipPK> {
     boolean existsByUserAndTournament(User user, Tournament tournament);
+    List<JoinAsParticipantRelationship> findByUserId(Integer userId);
 }
 

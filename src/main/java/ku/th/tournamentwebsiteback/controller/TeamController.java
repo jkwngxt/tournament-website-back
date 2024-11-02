@@ -3,6 +3,7 @@ package ku.th.tournamentwebsiteback.controller;
 import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
+import ku.th.tournamentwebsiteback.response.TeamProfileResponse;
 import ku.th.tournamentwebsiteback.service.SecurityService;
 import ku.th.tournamentwebsiteback.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +46,17 @@ public class TeamController {
         return ResponseEntity.ok("Team validated successfully");
     }
 
+    // Gat all team detail by user id
+    @GetMapping("/teams/user/{id}")
+    public ResponseEntity<List<TeamProfileResponse>> getAllTeamByUserId(@PathVariable Integer id) {
+        List<TeamProfileResponse> team = teamService.getAllTeamDetailByUserId(id);
+        return ResponseEntity.ok(team);
+    }
+
     // Get all teams in Tournament
     @GetMapping("/tournaments/{tournamentId}/teams")
-    public ResponseEntity<List<TeamDetailResponse>> getTeamByTournamentId(@PathVariable UUID id) {
-        List<TeamDetailResponse> teams = teamService.getTeamByTournamentId(id);
+    public ResponseEntity<List<TeamDetailResponse>> getTeamByTournamentId(@PathVariable UUID tournamentId) {
+        List<TeamDetailResponse> teams = teamService.getTeamByTournamentId(tournamentId);
         return ResponseEntity.ok(teams);
     }
 
@@ -59,4 +67,6 @@ public class TeamController {
         TeamDetailResponse team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);
         return ResponseEntity.ok(team);
     }
+
+
 }

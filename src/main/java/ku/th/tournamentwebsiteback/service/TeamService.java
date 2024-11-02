@@ -10,6 +10,7 @@ import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
 import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
+import ku.th.tournamentwebsiteback.response.TeamProfileResponse;
 import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,5 +158,17 @@ public class TeamService {
                 .collect(Collectors.toList()));
         dto.setTournamentId(team.getJoinAsParticipantRelationships().get(0).getTournament().getTournamentId());
         return dto;
+    }
+
+    public List<TeamProfileResponse> getAllTeamDetailByUserId(Integer userId) {
+        List<JoinAsParticipantRelationship> relationships = participantRepository.findByUserId(userId);
+
+        List<Team> teams = relationships.stream()
+                .map(JoinAsParticipantRelationship::getTeam)
+                .toList();
+
+        return teams.stream()
+                .map(team -> modelMapper.map(team, TeamProfileResponse.class))
+                .collect(Collectors.toList());
     }
 }
