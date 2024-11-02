@@ -3,7 +3,6 @@ package ku.th.tournamentwebsiteback.service;
 import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.DTO.JudgeDTO;
 import ku.th.tournamentwebsiteback.DTO.QualifierMatchDTO;
-import ku.th.tournamentwebsiteback.DTO.TeamDTO;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
@@ -15,9 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class QualifierMatchService {
@@ -34,40 +34,26 @@ public class QualifierMatchService {
     @Autowired
     JoinAsStaffRepository joinAsStaffRepository;
 
+
     public List<QualifierMatchDTO> findQualifierMatchesByTournamentId(UUID tournamentId) {
+
         List<QualifierMatch> matches = qualifierMatchRepository.findByTournamentTournamentId(tournamentId);
-        List<QualifierMatchDTO> matchDTOs = new ArrayList<>();
+        return  matches.stream()
+                .map(this::qualifierMatchToDto)
+                .collect(toList());
+    }
 
-        for (QualifierMatch match : matches) {
-            QualifierMatchDTO matchDTO = new QualifierMatchDTO();
-            matchDTO.setLobbyId(match.getLobbyId());
-            matchDTO.setStartLobbyDateTime(match.getStartLobbyDateTime());
-            matchDTO.setCloseLobbyDateTime(match.getCloseLobbyDateTime());
-
-            // Map Judges
-            List<JudgeDTO> judgeDTOs = new ArrayList<>();
-            for (Judge judge : match.getJudges()) {
-                User user = judge.getJoinAsStaffRelationship().getUser();
-                JudgeDTO judgeDTO = new JudgeDTO();
-                judgeDTO.setUserId(user.getUserId());
-                judgeDTO.setUsername(user.getUsername());
-                judgeDTOs.add(judgeDTO);
-            }
-            matchDTO.setJudges(judgeDTOs);
-
-            // Map Teams
-            List<TeamDTO> teamDTOs = new ArrayList<>();
-            for (Team team : match.getTeams()) {
-                TeamDTO teamDTO = new TeamDTO();
-                teamDTO.setTeamId(team.getTeamId());
-                teamDTO.setTeamName(team.getTeamName());
-                teamDTOs.add(teamDTO);
-            }
-            matchDTO.setTeams(teamDTOs);
-
-            matchDTOs.add(matchDTO);
+    public QualifierMatchDTO qualifierMatchToDto(QualifierMatch qualifierMatch) {
+        QualifierMatchDTO qualifierMatchDTO = modelMapper.map(qualifierMatch, QualifierMatchDTO.class);
+        List<Judge> judges = qualifierMatch.getJudges();
+        for (Judge judge : judges) {
+            qualifierMatchDTO.getJudges().clear();
+            JudgeDTO judgeDTO = new JudgeDTO();
+            judgeDTO.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
+            judgeDTO.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
+            qualifierMatchDTO.getJudges().add(judgeDTO);
         }
-        return matchDTOs;
+        return qualifierMatchDTO;
     }
 
     public void createLobby(QualifierMatchRequest request) {
