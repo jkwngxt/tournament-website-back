@@ -1,11 +1,11 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.TournamentProfileDTO;
 import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.repository.TournamentRepository;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
+import ku.th.tournamentwebsiteback.response.TournamentProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,14 +28,14 @@ public class TournamentService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<TournamentProfileDTO> getAllTournaments() {
+    public List<TournamentProfileResponse> getAllTournaments() {
         return tournamentRepository.findAll()
                 .stream()
                 .map(this::tournamentToDto)
                 .collect(toList());
     }
 
-    public TournamentProfileDTO getTournamentById(UUID id) {
+    public TournamentProfileResponse getTournamentById(UUID id) {
         Tournament tournament = tournamentRepository.findById(id).orElse(null);
         if (tournament == null) {
             return null;
@@ -56,12 +56,12 @@ public class TournamentService {
         tournamentRepository.save(existingTournament);
     }
 
-    public TournamentProfileDTO getLatestTournament() {
+    public TournamentProfileResponse getLatestTournament() {
         Optional<Tournament> latestTournament = tournamentRepository.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startDate"))).stream().findFirst();
         return latestTournament.map(this::tournamentToDto).orElse(null);
     }
 
-    public List<TournamentProfileDTO> getCurrentTournament() {
+    public List<TournamentProfileResponse> getCurrentTournament() {
         ZonedDateTime now = ZonedDateTime.now();
 
         return tournamentRepository.findAll()
@@ -72,7 +72,7 @@ public class TournamentService {
                 .collect(Collectors.toList());
     }
 
-    public TournamentProfileDTO tournamentToDto(Tournament tournament) {
-        return modelMapper.map(tournament, TournamentProfileDTO.class);
+    public TournamentProfileResponse tournamentToDto(Tournament tournament) {
+        return modelMapper.map(tournament, TournamentProfileResponse.class);
     }
 }

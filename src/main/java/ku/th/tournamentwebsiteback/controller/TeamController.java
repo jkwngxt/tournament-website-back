@@ -1,6 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.dto.TeamDetailDTO;
+import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
 import ku.th.tournamentwebsiteback.exception.UnauthorizedException;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
@@ -19,14 +19,14 @@ public class TeamController {
     TeamService teamService;
 
     @GetMapping("/teams")
-    public ResponseEntity<List<TeamDetailDTO>> getAllTeams() {
-        List<TeamDetailDTO> teams = teamService.getAllTeams();
+    public ResponseEntity<List<TeamDetailResponse>> getAllTeams() {
+        List<TeamDetailResponse> teams = teamService.getAllTeams();
         return ResponseEntity.ok(teams);
     }
 
     @GetMapping("/teams/{id}")
-    public ResponseEntity<TeamDetailDTO> getTeamById(@PathVariable UUID id) {
-        TeamDetailDTO team = teamService.getTeamById(id);
+    public ResponseEntity<TeamDetailResponse> getTeamById(@PathVariable UUID id) {
+        TeamDetailResponse team = teamService.getTeamById(id);
         return ResponseEntity.ok(team);
     }
 
@@ -46,16 +46,16 @@ public class TeamController {
 
     // Get all teams in Tournament
     @GetMapping("/tournaments/{tournamentId}/teams")
-    public ResponseEntity<List<TeamDetailDTO>> getTeamByTournamentId(@PathVariable UUID id) {
-        List<TeamDetailDTO> teams = teamService.getTeamByTournamentId(id);
+    public ResponseEntity<List<TeamDetailResponse>> getTeamByTournamentId(@PathVariable UUID id) {
+        List<TeamDetailResponse> teams = teamService.getTeamByTournamentId(id);
         return ResponseEntity.ok(teams);
     }
 
     // Get team's user in specific tournament
     @GetMapping("/tournaments/{tournamentId}/teams/me")
-    public ResponseEntity<TeamDetailDTO> getTeamByTournamentIdAndUserId(@PathVariable UUID tournamentId) {
+    public ResponseEntity<TeamDetailResponse> getTeamByTournamentIdAndUserId(@PathVariable UUID tournamentId) {
         Integer userId = getCurrentUserId();
-        TeamDetailDTO team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);
+        TeamDetailResponse team = teamService.getTeamByTournamentIdAndUserId(userId, tournamentId);
         return ResponseEntity.ok(team);
     }
 

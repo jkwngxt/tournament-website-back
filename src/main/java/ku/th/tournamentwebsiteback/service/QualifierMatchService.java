@@ -1,13 +1,13 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.JudgeProfileDTO;
-import ku.th.tournamentwebsiteback.dto.QualifierMatchDetailDTO;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
+import ku.th.tournamentwebsiteback.response.JudgeProfileResponse;
+import ku.th.tournamentwebsiteback.response.QualifierMatchDetailResponse;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,25 +35,25 @@ public class QualifierMatchService {
     JoinAsStaffRepository joinAsStaffRepository;
 
 
-    public List<QualifierMatchDetailDTO> findQualifierMatchesByTournamentId(UUID tournamentId) {
+    public List<QualifierMatchDetailResponse> findQualifierMatchesByTournamentId(UUID tournamentId) {
 
         List<QualifierMatch> matches = qualifierMatchRepository.findByTournamentTournamentId(tournamentId);
-        return  matches.stream()
+        return matches.stream()
                 .map(this::qualifierMatchToDto)
                 .collect(toList());
     }
 
-    public QualifierMatchDetailDTO qualifierMatchToDto(QualifierMatch qualifierMatch) {
-        QualifierMatchDetailDTO qualifierMatchDetailDTO = modelMapper.map(qualifierMatch, QualifierMatchDetailDTO.class);
+    public QualifierMatchDetailResponse qualifierMatchToDto(QualifierMatch qualifierMatch) {
+        QualifierMatchDetailResponse qualifierMatchDetailResponse = modelMapper.map(qualifierMatch, QualifierMatchDetailResponse.class);
         List<Judge> judges = qualifierMatch.getJudges();
         for (Judge judge : judges) {
-            qualifierMatchDetailDTO.getJudges().clear();
-            JudgeProfileDTO judgeProfileDTO = new JudgeProfileDTO();
-            judgeProfileDTO.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
-            judgeProfileDTO.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
-            qualifierMatchDetailDTO.getJudges().add(judgeProfileDTO);
+            qualifierMatchDetailResponse.getJudges().clear();
+            JudgeProfileResponse judgeProfileResponse = new JudgeProfileResponse();
+            judgeProfileResponse.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
+            judgeProfileResponse.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
+            qualifierMatchDetailResponse.getJudges().add(judgeProfileResponse);
         }
-        return qualifierMatchDetailDTO;
+        return qualifierMatchDetailResponse;
     }
 
     public void createLobby(QualifierMatchRequest request) {

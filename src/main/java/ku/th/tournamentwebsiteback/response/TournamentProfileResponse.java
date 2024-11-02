@@ -1,4 +1,4 @@
-package ku.th.tournamentwebsiteback.dto;
+package ku.th.tournamentwebsiteback.response;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
-public class TournamentProfileDTO {
+public class TournamentProfileResponse {
     private UUID tournamentId;
     private String title;
     private String description;

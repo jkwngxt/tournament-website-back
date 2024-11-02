@@ -1,11 +1,11 @@
-package ku.th.tournamentwebsiteback.dto;
+package ku.th.tournamentwebsiteback.response;
 
 import lombok.Data;
 
 import java.util.UUID;
 
 @Data
-public class TeamProfileDTO {
+public class TeamProfileResponse {
     private UUID teamId;
     private String teamName;
     private String profileImage;

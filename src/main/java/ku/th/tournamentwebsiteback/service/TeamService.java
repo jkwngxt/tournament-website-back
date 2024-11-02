@@ -1,8 +1,6 @@
 package ku.th.tournamentwebsiteback.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import ku.th.tournamentwebsiteback.dto.TeamDetailDTO;
-import ku.th.tournamentwebsiteback.dto.UserProfileDTO;
 import ku.th.tournamentwebsiteback.entity.JoinAsParticipantRelationship;
 import ku.th.tournamentwebsiteback.entity.Team;
 import ku.th.tournamentwebsiteback.entity.Tournament;
@@ -11,6 +9,8 @@ import ku.th.tournamentwebsiteback.exception.BadRequestException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
+import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
+import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,11 +36,11 @@ public class TeamService {
     JoinAsParticipantRepository participantRepository;
 
 
-    public List<TeamDetailDTO> getAllTeams() {
+    public List<TeamDetailResponse> getAllTeams() {
         return teamRepository.findAll().stream().map(this::toDetailDTO).collect(Collectors.toList());
     }
 
-    public TeamDetailDTO getTeamById(UUID id) {
+    public TeamDetailResponse getTeamById(UUID id) {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
         return toDetailDTO(team);
@@ -53,12 +53,12 @@ public class TeamService {
         teamRepository.save(existingTeam);
     }
 
-    public List<TeamDetailDTO> getTeamByTournamentId(UUID id) {
+    public List<TeamDetailResponse> getTeamByTournamentId(UUID id) {
         List<Team> teams = teamRepository.findByJoinAsParticipantRelationshipsTournamentTournamentId(id);
         return teams.stream().map(this::toDetailDTO).collect(Collectors.toList());
     }
 
-    public TeamDetailDTO getTeamByTournamentIdAndUserId(Integer userId, UUID id) {
+    public TeamDetailResponse getTeamByTournamentIdAndUserId(Integer userId, UUID id) {
         Team team = teamRepository
                 .findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(userId, id);
 
@@ -149,11 +149,11 @@ public class TeamService {
         }
     }
 
-    private TeamDetailDTO toDetailDTO(Team team) {
-        TeamDetailDTO dto = modelMapper.map(team, TeamDetailDTO.class);
+    private TeamDetailResponse toDetailDTO(Team team) {
+        TeamDetailResponse dto = modelMapper.map(team, TeamDetailResponse.class);
         dto.setMembers(team.getJoinAsParticipantRelationships()
                 .stream()
-                .map(rel -> modelMapper.map(rel.getUser(), UserProfileDTO.class))
+                .map(rel -> modelMapper.map(rel.getUser(), UserProfileResponse.class))
                 .collect(Collectors.toList()));
         dto.setTournamentId(team.getJoinAsParticipantRelationships().get(0).getTournament().getTournamentId());
         return dto;

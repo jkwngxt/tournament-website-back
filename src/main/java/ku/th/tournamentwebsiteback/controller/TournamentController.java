@@ -1,6 +1,6 @@
 package ku.th.tournamentwebsiteback.controller;
 
-import ku.th.tournamentwebsiteback.dto.TournamentProfileDTO;
+import ku.th.tournamentwebsiteback.response.TournamentProfileResponse;
 import ku.th.tournamentwebsiteback.request.TournamentRequest;
 import ku.th.tournamentwebsiteback.request.UpdateTournamentRequest;
 import ku.th.tournamentwebsiteback.service.TournamentService;
@@ -20,29 +20,29 @@ public class TournamentController {
 
     // Get all tournaments
     @GetMapping
-    public ResponseEntity<List<TournamentProfileDTO>> getTournaments() {
-        List<TournamentProfileDTO> tournaments = tournamentService.getAllTournaments();
+    public ResponseEntity<List<TournamentProfileResponse>> getTournaments() {
+        List<TournamentProfileResponse> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);
     }
 
     // Get latest tournaments
     @GetMapping("/latest")
-    public ResponseEntity<TournamentProfileDTO> getLatestTournament() {
-        TournamentProfileDTO tournament = tournamentService.getLatestTournament();
+    public ResponseEntity<TournamentProfileResponse> getLatestTournament() {
+        TournamentProfileResponse tournament = tournamentService.getLatestTournament();
         return tournament!=null? ResponseEntity.ok(tournament): ResponseEntity.notFound().build();
     }
 
     // Get current tournaments
     @GetMapping("/current")
-    public ResponseEntity<List<TournamentProfileDTO>> getCurrentTournament() {
-        List<TournamentProfileDTO> tournaments = tournamentService.getCurrentTournament();
+    public ResponseEntity<List<TournamentProfileResponse>> getCurrentTournament() {
+        List<TournamentProfileResponse> tournaments = tournamentService.getCurrentTournament();
         return tournaments.isEmpty()? ResponseEntity.ok(tournaments): ResponseEntity.notFound().build();
     }
 
     // Get a tournament by ID
     @GetMapping("/{id}")
-    public ResponseEntity<TournamentProfileDTO> getTournamentById(@PathVariable UUID id) {
-        TournamentProfileDTO tournament = tournamentService.getTournamentById(id);
+    public ResponseEntity<TournamentProfileResponse> getTournamentById(@PathVariable UUID id) {
+        TournamentProfileResponse tournament = tournamentService.getTournamentById(id);
         return tournament != null ? ResponseEntity.ok(tournament) : ResponseEntity.notFound().build();
     }
 

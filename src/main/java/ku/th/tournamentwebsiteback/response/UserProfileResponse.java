@@ -1,9 +1,9 @@
-package ku.th.tournamentwebsiteback.dto;
+package ku.th.tournamentwebsiteback.response;
 
 import lombok.Data;
 
 @Data
-public class UserProfileDTO {
+public class UserProfileResponse {
     private Integer userId;
     private String username;
     private String country;
