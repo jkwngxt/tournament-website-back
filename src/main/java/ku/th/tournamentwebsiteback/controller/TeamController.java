@@ -1,6 +1,7 @@
 package ku.th.tournamentwebsiteback.controller;
 
 import ku.th.tournamentwebsiteback.dto.TeamDetailDTO;
+import ku.th.tournamentwebsiteback.exception.UnauthorizedException;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
 import ku.th.tournamentwebsiteback.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +27,14 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<TeamDetailDTO> getTeamById(@PathVariable UUID id) {
         TeamDetailDTO team = teamService.getTeamById(id);
-        return team != null ? ResponseEntity.ok(team) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(team);
     }
 
     // Get all teams in Tournament
     @GetMapping("/tournament/{id}")
     public ResponseEntity<List<TeamDetailDTO>> getTeamByTournamentId(@PathVariable UUID id) {
-        List<TeamDetailDTO> team = teamService.getTeamByTournamentId(id);
-        return team != null ? ResponseEntity.ok(team) : ResponseEntity.notFound().build();
+        List<TeamDetailDTO> teams = teamService.getTeamByTournamentId(id);
+        return ResponseEntity.ok(teams);
     }
 
     // Get team's user in specific tournament
@@ -41,7 +42,7 @@ public class TeamController {
     public ResponseEntity<TeamDetailDTO> getTeamByTournamentIdAndUserId(@PathVariable UUID id) {
         Integer userId = getCurrentUserId();
         TeamDetailDTO team = teamService.getTeamByTournamentIdAndUserId(userId, id);
-        return team != null ? ResponseEntity.ok(team) : ResponseEntity.notFound().build();
+        return ResponseEntity.ok(team);
     }
 
     // Validate team = {rejected/approved}
@@ -53,11 +54,10 @@ public class TeamController {
 
     private Integer getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("Current principal: " + principal);
         if (principal instanceof Integer) {
             return (Integer) principal;
         } else {
-            throw new RuntimeException("Invalid user principal.");
+            throw new UnauthorizedException("Invalid user principal.");
         }
     }
 }

@@ -7,10 +7,10 @@ import ku.th.tournamentwebsiteback.entity.JoinAsParticipantRelationship;
 import ku.th.tournamentwebsiteback.entity.Team;
 import ku.th.tournamentwebsiteback.entity.Tournament;
 import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.exception.BadRequestException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
-import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,18 +41,16 @@ public class TeamService {
     }
 
     public TeamDetailDTO getTeamById(UUID id) {
-        Team team = teamRepository.findById(id).orElse(null);
-        if (team == null) {
-            return null;
-        }
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + id));
         return toDetailDTO(team);
     }
 
     public void validateTeam(UUID teamId, ValidateTeamRequest request) {
-        Team existingTournament = teamRepository.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("Team not found"));
-        modelMapper.map(request, existingTournament);
-        teamRepository.save(existingTournament);
+        Team existingTeam = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with id: " + teamId));
+        modelMapper.map(request, existingTeam);
+        teamRepository.save(existingTeam);
     }
 
     public List<TeamDetailDTO> getTeamByTournamentId(UUID id) {
@@ -64,14 +62,14 @@ public class TeamService {
         Team team = teamRepository
                 .findByJoinAsParticipantRelationshipsUserUserIdAndJoinAsParticipantRelationshipsTournamentTournamentId(userId, id);
 
-        if(team == null) {
-            return null;
+        if (team == null) {
+            throw new EntityNotFoundException("Team not found for user " + userId + " in tournament " + id);
         }
 
         return toDetailDTO(team);
     }
 
-    public void createTeam(TeamRequest request) throws BadRequestException {
+    public void createTeam(TeamRequest request) {
         Tournament tournament = getTournament(request.getTournamentId());
         validateTeamRegistrationPeriod(tournament);
         validateTeamMemberCount(request, tournament);
@@ -85,27 +83,28 @@ public class TeamService {
 
     private Tournament getTournament(UUID tournamentId) {
         return tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new EntityNotFoundException("Tournament not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Tournament not found with id: " + tournamentId));
     }
 
-    private void validateTeamRegistrationPeriod(Tournament tournament) throws BadRequestException {
+    private void validateTeamRegistrationPeriod(Tournament tournament) {
         if (!tournament.isInTeamRegisPeriod()) {
             throw new BadRequestException("This is not within the team registration period.");
         }
     }
 
-    private void validateTeamMemberCount(TeamRequest request, Tournament tournament) throws BadRequestException {
+    private void validateTeamMemberCount(TeamRequest request, Tournament tournament) {
         if (request.getMemberIdList().size() != tournament.getTeamMemberAmount()) {
-            throw new BadRequestException("Invalid team member count");
+            throw new BadRequestException("Invalid team member count. Expected: "
+                    + tournament.getTeamMemberAmount() + ", but got: " + request.getMemberIdList().size());
         }
     }
 
     private User getUserById(Integer userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
     }
 
-    private List<User> getValidTeamMembers(TeamRequest request, Tournament tournament) throws BadRequestException {
+    private List<User> getValidTeamMembers(TeamRequest request, Tournament tournament) {
         List<User> members = new ArrayList<>();
         for (Integer userId : request.getMemberIdList()) {
             User member = getUserById(userId);
@@ -134,12 +133,12 @@ public class TeamService {
         return participant;
     }
 
-    private void validateUserEligibility(User member, Tournament tournament) throws BadRequestException {
+    private void validateUserEligibility(User member, Tournament tournament) {
         if (participantRepository.existsByUserAndTournament(member, tournament)) {
-            throw new BadRequestException("Some users are already in another team.");
+            throw new BadRequestException("User " + member.getUserId() + " is already in another team.");
         }
         if (staffRepository.existsByUserAndTournament(member, tournament)) {
-            throw new BadRequestException("Some users are already in the staff team.");
+            throw new BadRequestException("User " + member.getUserId() + " is already in the staff team.");
         }
     }
 
