@@ -8,4 +8,5 @@ import java.util.UUID;
 public class TeamDTO {
     private UUID teamId;
     private String teamName;
+    private String profileImage;
 }

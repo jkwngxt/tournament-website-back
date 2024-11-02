@@ -40,7 +40,7 @@ public class QualifierLobbyController {
 
     @PostMapping("/{lobbyId}/join/team")
     public ResponseEntity<?> joinQualifierMatchAsTeam(@PathVariable UUID lobbyId) {
-        Integer userId = getCurrentUserId();
+        Integer userId = 1;
         try {
             qualifierMatchService.joinQualifierMatchAsTeam(lobbyId, userId);
             return ResponseEntity.ok("Successfully joined the qualifier match as a team.");

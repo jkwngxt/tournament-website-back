@@ -7,11 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class QualifierMatchDTO {
+public class QualifierMatchProfileDTO {
     private UUID lobbyId;
     private String lobbyName;
     private ZonedDateTime startLobbyDateTime;
     private ZonedDateTime closeLobbyDateTime;
-    private List<JudgeProfileDTO> judges;
-    private List<TeamDTO> teams;
 }
