@@ -31,18 +31,16 @@ public class TournamentService {
     public List<TournamentProfileResponse> getAllTournaments() {
         return tournamentRepository.findAll()
                 .stream()
-                .map(this::tournamentToDto)
+                .map(this::convertToDto)
                 .collect(toList());
     }
 
     public TournamentProfileResponse getTournamentById(UUID id) {
-        Tournament tournament = tournamentRepository.findById(id).orElse(null);
-        if (tournament == null) {
-            return null;
-        }
-
-        return tournamentToDto(tournament);
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Tournament not found with id: " + id));
+        return convertToDto(tournament);
     }
+
 
     public void createTournament(TournamentRequest request) {
         Tournament tournament = modelMapper.map(request, Tournament.class);
@@ -58,21 +56,21 @@ public class TournamentService {
 
     public TournamentProfileResponse getLatestTournament() {
         Optional<Tournament> latestTournament = tournamentRepository.findAll(PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startDate"))).stream().findFirst();
-        return latestTournament.map(this::tournamentToDto).orElse(null);
+        return latestTournament.map(this::convertToDto).orElse(null);
     }
 
-    public List<TournamentProfileResponse> getCurrentTournament() {
+    public List<TournamentProfileResponse> getCurrentTournaments() {
         ZonedDateTime now = ZonedDateTime.now();
 
         return tournamentRepository.findAll()
                 .stream()
                 .filter(tournament -> tournament.getStartQualifierDateTime().isBefore(now) &&
                         tournament.getEndDateTime().isAfter(now))
-                .map(this::tournamentToDto)
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
-    public TournamentProfileResponse tournamentToDto(Tournament tournament) {
+    private TournamentProfileResponse convertToDto(Tournament tournament) {
         return modelMapper.map(tournament, TournamentProfileResponse.class);
     }
 }

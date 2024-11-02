@@ -5,7 +5,6 @@ import ku.th.tournamentwebsiteback.response.QualifierMatchDetailResponse;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
 import ku.th.tournamentwebsiteback.service.QualifierMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
