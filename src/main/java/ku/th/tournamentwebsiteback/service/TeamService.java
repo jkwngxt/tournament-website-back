@@ -161,7 +161,7 @@ public class TeamService {
     }
 
     public List<TeamProfileResponse> getAllTeamDetailByUserId(Integer userId) {
-        List<JoinAsParticipantRelationship> relationships = participantRepository.findByUserId(userId);
+        List<JoinAsParticipantRelationship> relationships = participantRepository.findByUserUserId(userId);
 
         List<Team> teams = relationships.stream()
                 .map(JoinAsParticipantRelationship::getTeam)

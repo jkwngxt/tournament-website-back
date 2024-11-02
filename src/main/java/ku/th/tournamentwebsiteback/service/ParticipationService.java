@@ -22,15 +22,15 @@ public class ParticipationService {
     }
 
     public List<ParticipationResponse> getAllParticipationByTournamentId(UUID tournamentId) {
-        return convertToDTO(participantRepository.findByTournamentId(tournamentId));
+        return convertToDTO(participantRepository.findByTournamentTournamentId(tournamentId));
     }
 
     public List<ParticipationResponse> getAllParticipationByUserId(Integer userId) {
-        return convertToDTO(participantRepository.findByUserId(userId));
+        return convertToDTO(participantRepository.findByUserUserId(userId));
     }
 
     public List<ParticipationResponse> getAllParticipationByTeamId(UUID teamId) {
-        return convertToDTO(participantRepository.findByTeamId(teamId));
+        return convertToDTO(participantRepository.findByTeamTeamId(teamId));
     }
 
     private List<ParticipationResponse> convertToDTO(List<JoinAsParticipantRelationship> participationList) {

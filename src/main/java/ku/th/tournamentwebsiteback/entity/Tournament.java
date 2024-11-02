@@ -7,10 +7,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 @Data
@@ -44,11 +42,7 @@ public class Tournament {
 
     public boolean isInTeamRegisPeriod() {
         ZonedDateTime now = ZonedDateTime.now();
-        if ((startTeamRegisDateTime.isBefore(now) || startTeamRegisDateTime.isEqual(now))
-                && closeTeamRegisDateTime.isAfter(now)) {
-            return true;
-        }
-
-        return false;
+        return (startTeamRegisDateTime.isBefore(now) || startTeamRegisDateTime.isEqual(now))
+                && closeTeamRegisDateTime.isAfter(now);
     }
 }
