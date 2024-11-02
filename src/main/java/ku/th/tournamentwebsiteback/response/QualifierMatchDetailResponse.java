@@ -12,6 +12,6 @@ public class QualifierMatchDetailResponse {
     private String lobbyName;
     private ZonedDateTime startLobbyDateTime;
     private ZonedDateTime closeLobbyDateTime;
-    private List<JudgeProfileResponse> judges;
+    private List<UserProfileResponse> judges;
     private List<TeamProfileResponse> teams;
 }

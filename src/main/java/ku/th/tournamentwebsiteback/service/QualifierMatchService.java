@@ -4,14 +4,13 @@ import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
+import ku.th.tournamentwebsiteback.exception.BadRequestException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
-import ku.th.tournamentwebsiteback.response.JudgeProfileResponse;
 import ku.th.tournamentwebsiteback.response.QualifierMatchDetailResponse;
-import org.apache.coyote.BadRequestException;
+import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,62 +21,54 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class QualifierMatchService {
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Autowired
-    QualifierMatchRepository qualifierMatchRepository;
+    private QualifierMatchRepository qualifierMatchRepository;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    TeamRepository teamRepository;
+    private TeamRepository teamRepository;
     @Autowired
-    JudgeRepository judgeRepository;
+    private JudgeRepository judgeRepository;
     @Autowired
-    JoinAsStaffRepository joinAsStaffRepository;
+    private JoinAsStaffRepository joinAsStaffRepository;
+    @Autowired
+    private TournamentRepository tournamentRepository;
+
 
 
     public List<QualifierMatchDetailResponse> findQualifierMatchesByTournamentId(UUID tournamentId) {
-
         List<QualifierMatch> matches = qualifierMatchRepository.findByTournamentTournamentId(tournamentId);
         return matches.stream()
                 .map(this::qualifierMatchToDto)
                 .collect(toList());
     }
 
-    public QualifierMatchDetailResponse qualifierMatchToDto(QualifierMatch qualifierMatch) {
-        QualifierMatchDetailResponse qualifierMatchDetailResponse = modelMapper.map(qualifierMatch, QualifierMatchDetailResponse.class);
-        List<Judge> judges = qualifierMatch.getJudges();
-        for (Judge judge : judges) {
-            qualifierMatchDetailResponse.getJudges().clear();
-            JudgeProfileResponse judgeProfileResponse = new JudgeProfileResponse();
-            judgeProfileResponse.setUserId(judge.getId().getJoinAsStaffRelationshipId().getUserId());
-            judgeProfileResponse.setUsername(judge.getJoinAsStaffRelationship().getUser().getUsername());
-            qualifierMatchDetailResponse.getJudges().add(judgeProfileResponse);
-        }
-        return qualifierMatchDetailResponse;
-    }
+    public void createQualifierMatch(UUID tournamentId, QualifierMatchRequest request) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new EntityNotFoundException("Tournament not found with id: " + tournamentId));
 
-    public void createLobby(QualifierMatchRequest request) {
         QualifierMatch qualifierMatch = modelMapper.map(request, QualifierMatch.class);
+        qualifierMatch.setTournament(tournament);
+
         qualifierMatchRepository.save(qualifierMatch);
     }
 
     public void deleteQualifierMatch(UUID lobbyId, Integer userId) {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
-                .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found with id: " + lobbyId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        if (!hasPermissionToDelete(user, qualifierMatch)) {
-            throw new AccessDeniedException("User does not have permission to delete this qualifier match");
-        }
-
+        // Remove qualifier match reference from teams
         List<Team> teams = qualifierMatch.getTeams();
         for (Team team : teams) {
             team.setQualifierMatch(null);
             teamRepository.save(team);
         }
 
+        // Delete judges associated with the qualifier match
         List<Judge> judges = qualifierMatch.getJudges();
         for (Judge judge : judges) {
             judgeRepository.delete(judge);
@@ -86,7 +77,7 @@ public class QualifierMatchService {
         qualifierMatchRepository.delete(qualifierMatch);
     }
 
-    public void joinQualifierMatchAsTeam(UUID lobbyId, Integer userId) throws BadRequestException {
+    public void joinQualifierMatchAsTeam(UUID lobbyId, Integer userId) {
 
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
@@ -105,7 +96,7 @@ public class QualifierMatchService {
         teamRepository.save(team);
     }
 
-    public void leaveQualifierMatchAsTeam(UUID lobbyId, Integer userId) throws BadRequestException {
+    public void leaveQualifierMatchAsTeam(UUID lobbyId, Integer userId) {
 
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
@@ -124,7 +115,7 @@ public class QualifierMatchService {
         teamRepository.save(team);
     }
 
-    public void joinQualifierMatchAsStaff(UUID lobbyId, Integer userId) throws BadRequestException {
+    public void joinQualifierMatchAsStaff(UUID lobbyId, Integer userId) {
 
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
@@ -150,13 +141,9 @@ public class QualifierMatchService {
         judgeRepository.save(judge);
     }
 
-    public void leaveQualifierMatchAsStaff(UUID lobbyId, Integer userId) throws BadRequestException {
-
+    public void leaveQualifierMatchAsStaff(UUID lobbyId, Integer userId) {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
-                .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found with id: " + lobbyId));
 
         Judge judge = judgeRepository.findByJoinAsStaffRelationshipUserUserIdAndQualifierMatchLobbyId(userId, lobbyId);
         if (judge == null) {
@@ -166,10 +153,18 @@ public class QualifierMatchService {
         judgeRepository.delete(judge);
     }
 
-    // ยังไม่ได้ทดสอบ
-    private boolean hasPermissionToDelete(User user, QualifierMatch qualifierMatch) {
-        return user.getAdmin() != null;
+    public QualifierMatchDetailResponse qualifierMatchToDto(QualifierMatch qualifierMatch) {
+        QualifierMatchDetailResponse response = modelMapper.map(qualifierMatch, QualifierMatchDetailResponse.class);
+
+        // Map judges
+        List<UserProfileResponse> userProfileResponses = qualifierMatch.getJudges().stream()
+                .map(judge -> {
+                    User judgeUser = judge.getJoinAsStaffRelationship().getUser();
+                    return modelMapper.map(judgeUser, UserProfileResponse.class);
+                })
+                .collect(toList());
+        response.setJudges(userProfileResponses);
+
+        return response;
     }
-
-
 }

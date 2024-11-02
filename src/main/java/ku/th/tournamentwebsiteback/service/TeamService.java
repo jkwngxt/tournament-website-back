@@ -23,17 +23,17 @@ import java.util.stream.Collectors;
 @Service
 public class TeamService {
     @Autowired
-    TeamRepository teamRepository;
+    private TeamRepository teamRepository;
     @Autowired
-    ModelMapper modelMapper;
+    private ModelMapper modelMapper;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    TournamentRepository tournamentRepository;
+    private TournamentRepository tournamentRepository;
     @Autowired
-    JoinAsStaffRepository staffRepository;
+    private JoinAsStaffRepository staffRepository;
     @Autowired
-    JoinAsParticipantRepository participantRepository;
+    private JoinAsParticipantRepository participantRepository;
 
 
     public List<TeamDetailResponse> getAllTeams() {
