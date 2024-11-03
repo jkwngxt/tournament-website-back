@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/qualifier-matches")
-public class QualifierLobbyController {
+public class QualifierMatchController {
     @Autowired
     QualifierMatchService qualifierMatchService;
     @Autowired
