@@ -11,6 +11,5 @@ import java.util.UUID;
 @Repository
 public interface TournamentRepository extends JpaRepository<Tournament, UUID> {
     Tournament findTopByOrderByStartQualifierDateTimeDesc();
-
-    List<Tournament> findByStartQualifierDateTimeBeforeAndEndDateTimeAfter(ZonedDateTime now, ZonedDateTime now1);
+    Tournament findByStartQualifierDateTimeBeforeAndEndDateTimeAfter(ZonedDateTime qualifierDate, ZonedDateTime endDate);
 }

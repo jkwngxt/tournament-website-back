@@ -17,6 +17,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
+
 public class TournamentService {
     @Autowired
     private TournamentRepository tournamentRepository;
@@ -60,17 +61,15 @@ public class TournamentService {
         return convertToDto(latestTournament);
     }
 
-    public List<TournamentProfileResponse> getCurrentTournaments() {
+    public TournamentProfileResponse getCurrentTournaments() {
         ZonedDateTime now = ZonedDateTime.now();
-        List<Tournament> currentTournaments = tournamentRepository.findByStartQualifierDateTimeBeforeAndEndDateTimeAfter(now, now);
+        Tournament currentTournament = tournamentRepository.findByStartQualifierDateTimeBeforeAndEndDateTimeAfter(now, now);
 
-        if (currentTournaments.isEmpty()) {
+        if (currentTournament == null) {
             throw new EntityNotFoundException("No current tournament found");
         }
 
-        return currentTournaments.stream()
-                .map(this::convertToDto)
-                .toList();
+        return convertToDto(currentTournament);
     }
 
 

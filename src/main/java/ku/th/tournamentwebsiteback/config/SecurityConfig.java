@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/tournaments", "/tournaments/latest", "/tournaments/current").permitAll()
 
                         // Admin-Specific Endpoints
-                        .requestMatchers(HttpMethod.POST, "/tournaments").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/tournaments/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/tournaments/update/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/qualifier-matches/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "staffs/user/**/tournament/**/validate").hasRole("ADMIN")

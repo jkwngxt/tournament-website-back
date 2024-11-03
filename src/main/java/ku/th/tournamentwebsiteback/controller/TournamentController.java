@@ -35,9 +35,9 @@ public class TournamentController {
 
     // Get current tournaments
     @GetMapping("/current")
-    public ResponseEntity<List<TournamentProfileResponse>> getCurrentTournaments() {
-        List<TournamentProfileResponse> tournaments = tournamentService.getCurrentTournaments();
-        return ResponseEntity.ok(tournaments);
+    public ResponseEntity<TournamentProfileResponse> getCurrentTournaments() {
+        TournamentProfileResponse tournament = tournamentService.getCurrentTournaments();
+        return ResponseEntity.ok(tournament);
     }
 
     // Get a tournament by ID
