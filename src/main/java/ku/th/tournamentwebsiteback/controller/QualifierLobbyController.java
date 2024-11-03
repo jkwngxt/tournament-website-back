@@ -46,7 +46,7 @@ public class QualifierLobbyController {
 
     @PostMapping("/{lobbyId}/team/join")
     public ResponseEntity<String> joinQualifierMatchAsTeam(@PathVariable UUID lobbyId) {
-        Integer userId = 16;
+        Integer userId = securityService.getCurrentUserId();
         qualifierMatchService.joinQualifierMatchAsTeam(lobbyId, userId);
         return ResponseEntity.ok("Successfully joined the qualifier match as a team.");
     }
@@ -54,7 +54,7 @@ public class QualifierLobbyController {
 
     @PostMapping("/{lobbyId}/team/leave")
     public ResponseEntity<String> leaveQualifierMatchAsTeam(@PathVariable UUID lobbyId) {
-        Integer userId = 16;
+        Integer userId = securityService.getCurrentUserId();
         qualifierMatchService.leaveQualifierMatchAsTeam(lobbyId, userId);
         return ResponseEntity.ok("Successfully left the qualifier match as a team.");
     }
