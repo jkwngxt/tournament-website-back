@@ -17,11 +17,13 @@ public class UserService {
     private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private DTOConvertor convertor;
 
     public List<UserProfileResponse> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> modelMapper.map(user, UserProfileResponse.class))
+                .map(user -> convertor.convertToUserProfileResponse(user.getUserId(), null))
                 .collect(Collectors.toList());
     }
 

@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         // Public Endpoints
-                        .requestMatchers("/login", "/callback").permitAll()
+                        .requestMatchers("/signup").permitAll()
                         .requestMatchers("/tournaments", "/tournaments/latest", "/tournaments/current").permitAll()
 
                         // Admin-Specific Endpoints

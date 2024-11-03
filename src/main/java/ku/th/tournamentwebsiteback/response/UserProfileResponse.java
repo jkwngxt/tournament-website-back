@@ -2,6 +2,8 @@ package ku.th.tournamentwebsiteback.response;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class UserProfileResponse {
     private Integer userId;
@@ -9,4 +11,6 @@ public class UserProfileResponse {
     private String country;
     private Integer rank;
     private String profileImageUrl;
+    private String role;
+    private UUID refTournamentId;
 }
