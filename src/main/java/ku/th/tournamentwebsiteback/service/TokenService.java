@@ -48,46 +48,34 @@ public class TokenService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, Integer userId) {
+    private Claims extractClaims(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            return Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            Integer extractedUserId = Integer.parseInt(claims.getSubject());
-            return extractedUserId.equals(userId) && !claims.getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            logger.error("Error validating token", e);
-            throw new InvalidTokenException("Invalid JWT token", e);
-        }
-    }
-
-
-    public Integer extractUserId(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return Integer.parseInt(claims.getSubject());
         } catch (JwtException | IllegalArgumentException e) {
             logger.error("Error parsing JWT token", e);
             throw new InvalidTokenException("Invalid JWT token", e);
         }
     }
 
+    public Integer extractUserId(String token) {
+        return Integer.parseInt(extractClaims(token).getSubject());
+    }
+
     public long getExpirationTime(String token) {
+        return extractClaims(token).getExpiration().getTime();
+    }
+
+    public boolean isTokenValid(String token, Integer userId) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            return claims.getExpiration().getTime();
+            Claims claims = extractClaims(token);
+            Integer extractedUserId = Integer.parseInt(claims.getSubject());
+            return extractedUserId.equals(userId) && !claims.getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            logger.error("Error getting token expiration time", e);
+            logger.error("Error validating token", e);
             throw new InvalidTokenException("Invalid JWT token", e);
         }
     }
