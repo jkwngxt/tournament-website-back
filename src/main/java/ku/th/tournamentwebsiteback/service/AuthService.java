@@ -2,6 +2,9 @@ package ku.th.tournamentwebsiteback.service;
 
 import ku.th.tournamentwebsiteback.entity.User;
 import ku.th.tournamentwebsiteback.repository.UserRepository;
+import ku.th.tournamentwebsiteback.response.LoginResponse;
+import ku.th.tournamentwebsiteback.response.UserProfileResponse;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -10,7 +13,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -37,28 +39,29 @@ public class AuthService {
     @Autowired
     private TokenBlacklistService blacklistService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     public String getAuthorizationUrl() {
         return String.format("https://osu.ppy.sh/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code&scope=identify",
                 clientId, redirectUri);
     }
 
-    public Map<String, Object> processOAuthCallback(String code) {
-        Map<String, Object> response = fetchAccessToken(code);
-        if (response == null || response.get("access_token") == null) {
-            return createResponse("Login failed", null);
+    public LoginResponse processOAuthCallback(String code) {
+        String accessToken = fetchAccessToken(code);
+        if (accessToken == null) {
+            return new LoginResponse("Login failed", null, null);
         }
 
-        String accessToken = (String) response.get("access_token");
         Map<String, Object> userData = fetchUserData(accessToken);
-
         if (userData != null) {
             return handleUserData(userData);
         } else {
-            return createResponse("Failed to fetch user data", null);
+            return new LoginResponse("Failed to fetch user data", null, null);
         }
     }
 
-    private Map<String, Object> fetchAccessToken(String code) {
+    private String fetchAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("client_id", clientId);
@@ -72,7 +75,8 @@ public class AuthService {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<Map> responseEntity = restTemplate.postForEntity(tokenUrl, requestEntity, Map.class);
-        return responseEntity.getBody();
+
+        return (String) responseEntity.getBody().get("access_token");
     }
 
     private Map<String, Object> fetchUserData(String accessToken) {
@@ -85,7 +89,7 @@ public class AuthService {
         return userDataResponse.getBody();
     }
 
-    private Map<String, Object> handleUserData(Map<String, Object> userData) {
+    private LoginResponse handleUserData(Map<String, Object> userData) {
         Integer userId = (Integer) userData.get("id");
         User user = userRepository.findById(userId).orElse(new User());
         user.setUserId(userId);
@@ -99,17 +103,14 @@ public class AuthService {
         user.setCountry(countryData != null && countryData.get("name") != null ? (String) countryData.get("name") : "Unknown");
 
         userRepository.save(user);
-        String jwtToken = tokenService.generateToken(userId);
-        return createResponse("Login successful", jwtToken);
-    }
 
-    private Map<String, Object> createResponse(String status, String token) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("status", status);
-        if (token != null) {
-            result.put("token", token);
-        }
-        return result;
+        // Create UserProfileResponse
+        UserProfileResponse userProfile = modelMapper.map(user, UserProfileResponse.class);
+
+        // Return LoginResponse with JWT token and user profile
+        String jwtToken = tokenService.generateToken(userId);
+
+        return new LoginResponse("Login successful", jwtToken, userProfile);
     }
 
     public void logout(String token) {
