@@ -16,7 +16,7 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/authenticate")
+    @PostMapping("/auth")
     public ResponseEntity<LoginResponse> login(@RequestBody AuthRequest request) {
         LoginResponse response = authService.signup(request);
         return ResponseEntity.ok(response);
