@@ -15,7 +15,7 @@ public class JoinAsParticipantRelationship {
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @JsonBackReference
     @ManyToOne

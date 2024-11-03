@@ -30,5 +30,5 @@ public class Team {
     @JsonManagedReference
     @OneToOne
     @JoinColumn(name = "captain_user_id")
-    private User captain;
+    private Users captain;
 }

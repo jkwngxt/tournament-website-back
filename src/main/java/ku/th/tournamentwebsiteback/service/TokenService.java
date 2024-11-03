@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import ku.th.tournamentwebsiteback.constants.Roles;
-import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.entity.Users;
 import ku.th.tournamentwebsiteback.exception.InvalidTokenException;
 import ku.th.tournamentwebsiteback.exception.UserNotFoundException;
 import ku.th.tournamentwebsiteback.repository.UserRepository;
@@ -83,7 +83,7 @@ public class TokenService {
     }
 
     public List<SimpleGrantedAuthority> getAuthoritiesByUserId(Integer userId) {
-        User user = getUserById(userId);
+        Users user = getUserById(userId);
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         if (user.getAdmin() != null) {
             authorities.add(new SimpleGrantedAuthority(Roles.ROLE_ADMIN));
@@ -93,7 +93,7 @@ public class TokenService {
         return authorities;
     }
 
-    private User getUserById(Integer userId) {
+    private Users getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }

@@ -21,7 +21,7 @@ public class JoinAsStaffRelationship {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @MapsId("userId")
-    private User user;
+    private Users user;
 
     @JsonBackReference
     @ManyToOne

@@ -4,7 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.entity.JoinAsParticipantRelationship;
 import ku.th.tournamentwebsiteback.entity.Team;
 import ku.th.tournamentwebsiteback.entity.Tournament;
-import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.entity.Users;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsParticipantsRelationshipPK;
 import ku.th.tournamentwebsiteback.exception.BadRequestException;
 import ku.th.tournamentwebsiteback.repository.*;
@@ -82,8 +82,8 @@ public class TeamService {
         int totalMembers = request.getMemberIdList().size() + 1;
         validateTeamMemberCount(totalMembers, tournament);
 
-        User captain = getUserById(request.getCaptainUserId());
-        List<User> members = getValidTeamMembers(request, tournament, captain);
+        Users captain = getUserById(request.getCaptainUserId());
+        List<Users> members = getValidTeamMembers(request, tournament, captain);
 
         Team team = buildTeam(request, captain, members, tournament);
         return toDetailDTO(team);
@@ -107,26 +107,26 @@ public class TeamService {
         }
     }
 
-    private User getUserById(Integer userId) {
+    private Users getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
     }
 
-    private List<User> getValidTeamMembers(TeamRequest request, Tournament tournament, User captain) {
-        List<User> members = new ArrayList<>();
+    private List<Users> getValidTeamMembers(TeamRequest request, Tournament tournament, Users captain) {
+        List<Users> members = new ArrayList<>();
 
         validateUserEligibility(captain, tournament);
         members.add(captain);
 
         for (Integer userId : request.getMemberIdList()) {
-            User member = getUserById(userId);
+            Users member = getUserById(userId);
             validateUserEligibility(member, tournament);
             members.add(member);
         }
         return members;
     }
 
-    private Team buildTeam(TeamRequest request, User captain, List<User> members, Tournament tournament) {
+    private Team buildTeam(TeamRequest request, Users captain, List<Users> members, Tournament tournament) {
         Team team = modelMapper.map(request, Team.class);
         team.setCaptain(captain);
 
@@ -145,7 +145,7 @@ public class TeamService {
     }
 
 
-    private JoinAsParticipantRelationship createParticipantRelationship(User member, Team team, Tournament tournament) {
+    private JoinAsParticipantRelationship createParticipantRelationship(Users member, Team team, Tournament tournament) {
         JoinAsParticipantRelationship participant = new JoinAsParticipantRelationship();
 
         JoinAsParticipantsRelationshipPK pk = new JoinAsParticipantsRelationshipPK(
@@ -163,7 +163,7 @@ public class TeamService {
     }
 
 
-    private void validateUserEligibility(User member, Tournament tournament) {
+    private void validateUserEligibility(Users member, Tournament tournament) {
         if (participantRepository.existsByUserAndTournament(member, tournament)) {
             throw new BadRequestException("User " + member.getUserId() + " is already in another team.");
         }

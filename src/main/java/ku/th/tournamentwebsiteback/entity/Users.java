@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @Entity
-public class User {
+public class Users {
     @Id
     private Integer userId;
     private String username;

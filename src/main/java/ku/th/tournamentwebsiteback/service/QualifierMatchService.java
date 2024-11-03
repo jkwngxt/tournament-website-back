@@ -116,7 +116,7 @@ public class QualifierMatchService {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found"));
 
-        User user = userRepository.findById(userId)
+        Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         JoinAsStaffRelationship staffRelationship = joinAsStaffRepository.findByUserAndTournament(user, qualifierMatch.getTournament());
@@ -154,7 +154,7 @@ public class QualifierMatchService {
         // Map judges
         List<UserProfileResponse> userProfileResponses = qualifierMatch.getJudges().stream()
                 .map(judge -> {
-                    User judgeUser = judge.getJoinAsStaffRelationship().getUser();
+                    Users judgeUser = judge.getJoinAsStaffRelationship().getUser();
                     return modelMapper.map(judgeUser, UserProfileResponse.class);
                 })
                 .collect(toList());

@@ -1,6 +1,6 @@
 package ku.th.tournamentwebsiteback.service;
 
-import ku.th.tournamentwebsiteback.entity.User;
+import ku.th.tournamentwebsiteback.entity.Users;
 import ku.th.tournamentwebsiteback.repository.UserRepository;
 import ku.th.tournamentwebsiteback.response.LoginResponse;
 import ku.th.tournamentwebsiteback.response.UserProfileResponse;
@@ -91,7 +91,7 @@ public class AuthService {
 
     private LoginResponse handleUserData(Map<String, Object> userData) {
         Integer userId = (Integer) userData.get("id");
-        User user = userRepository.findById(userId).orElse(new User());
+        Users user = userRepository.findById(userId).orElse(new Users());
         user.setUserId(userId);
         user.setUsername((String) userData.get("username"));
         user.setProfileImageUrl((String) userData.get("avatar_url"));
