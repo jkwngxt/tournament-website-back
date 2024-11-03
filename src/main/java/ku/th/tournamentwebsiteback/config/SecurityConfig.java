@@ -1,5 +1,6 @@
 package ku.th.tournamentwebsiteback.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import ku.th.tournamentwebsiteback.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.io.IOException;
 

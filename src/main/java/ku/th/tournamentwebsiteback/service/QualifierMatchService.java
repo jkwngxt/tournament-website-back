@@ -5,7 +5,6 @@ import ku.th.tournamentwebsiteback.entity.*;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JoinAsStaffRelationshipPK;
 import ku.th.tournamentwebsiteback.entity.composite_primary_key.JudgePK;
 import ku.th.tournamentwebsiteback.exception.BadRequestException;
-import ku.th.tournamentwebsiteback.exception.ForbiddenException;
 import ku.th.tournamentwebsiteback.repository.*;
 import ku.th.tournamentwebsiteback.request.QualifierMatchRequest;
 import ku.th.tournamentwebsiteback.response.QualifierMatchDetailResponse;

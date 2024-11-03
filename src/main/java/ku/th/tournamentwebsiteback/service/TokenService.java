@@ -1,6 +1,9 @@
 package ku.th.tournamentwebsiteback.service;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import ku.th.tournamentwebsiteback.constants.Roles;
@@ -24,18 +27,14 @@ import java.util.List;
 @Service
 public class TokenService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
     @Autowired
     private UserRepository userRepository;
-
     @Value("${jwt.secret}")
     private String secret;
-
     @Value("${jwt.token.validity}")
     private long tokenValidity;
-
     private Key secretKey;
-
-    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
     @PostConstruct
     public void init() {

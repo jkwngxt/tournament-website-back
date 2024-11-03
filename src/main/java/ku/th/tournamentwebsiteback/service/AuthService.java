@@ -113,6 +113,6 @@ public class AuthService {
     }
 
     public void logout(String token) {
-            blacklistService.blacklistToken(token);
+        blacklistService.blacklistToken(token);
     }
 }

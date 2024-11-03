@@ -3,7 +3,6 @@ package ku.th.tournamentwebsiteback.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ku.th.tournamentwebsiteback.service.AuthService;
-import ku.th.tournamentwebsiteback.service.TokenBlacklistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
