@@ -32,13 +32,12 @@ public class AuthService {
 
     public LoginResponse signup(AuthRequest request) {
         Users user = modelMapper.map(request, Users.class);
-        System.out.println(user);
         userRepository.save(user);
         String jwtToken = tokenService.generateToken(user.getUserId());
         return new LoginResponse(
                 "Login successful",
                 jwtToken,
-                convertor.convertToUserProfileResponse(user.getUserId(), request.getTournamentId()));
+                convertor.idConvertToUserProfileResponse(user.getUserId(), request.getTournamentId()));
 
     }
 }

@@ -34,6 +34,8 @@ public class QualifierMatchService {
     private JoinAsStaffRepository joinAsStaffRepository;
     @Autowired
     private TournamentRepository tournamentRepository;
+    @Autowired
+    private DTOConvertor convertor;
 
 
     public List<QualifierMatchDetailResponse> findQualifierMatchesByTournamentId(UUID tournamentId) {
@@ -149,18 +151,7 @@ public class QualifierMatchService {
     }
 
     public QualifierMatchDetailResponse qualifierMatchToDto(QualifierMatch qualifierMatch) {
-        QualifierMatchDetailResponse response = modelMapper.map(qualifierMatch, QualifierMatchDetailResponse.class);
-
-        // Map judges
-        List<UserProfileResponse> userProfileResponses = qualifierMatch.getJudges().stream()
-                .map(judge -> {
-                    Users judgeUser = judge.getJoinAsStaffRelationship().getUser();
-                    return modelMapper.map(judgeUser, UserProfileResponse.class);
-                })
-                .collect(toList());
-        response.setJudges(userProfileResponses);
-
-        return response;
+        return convertor.qualifierMatchToDto(qualifierMatch);
     }
 
     public QualifierMatchDetailResponse findQualifierMatchesById(UUID id) {

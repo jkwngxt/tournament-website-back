@@ -12,7 +12,6 @@ import ku.th.tournamentwebsiteback.request.TeamRequest;
 import ku.th.tournamentwebsiteback.request.ValidateTeamRequest;
 import ku.th.tournamentwebsiteback.response.TeamDetailResponse;
 import ku.th.tournamentwebsiteback.response.TeamProfileResponse;
-import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +35,8 @@ public class TeamService {
     private JoinAsStaffRepository staffRepository;
     @Autowired
     private JoinAsParticipantRepository participantRepository;
+    @Autowired
+    private DTOConvertor convertor;
 
 
     public List<TeamDetailResponse> getAllTeams() {
@@ -173,13 +174,7 @@ public class TeamService {
     }
 
     private TeamDetailResponse toDetailDTO(Team team) {
-        TeamDetailResponse dto = modelMapper.map(team, TeamDetailResponse.class);
-        dto.setMembers(team.getJoinAsParticipantRelationships()
-                .stream()
-                .map(rel -> modelMapper.map(rel.getUser(), UserProfileResponse.class))
-                .collect(Collectors.toList()));
-        dto.setTournamentId(team.getJoinAsParticipantRelationships().get(0).getTournament().getTournamentId());
-        return dto;
+        return convertor.teamToDTO(team);
     }
 
     public List<TeamProfileResponse> getAllTeamDetailByUserId(Integer userId) {

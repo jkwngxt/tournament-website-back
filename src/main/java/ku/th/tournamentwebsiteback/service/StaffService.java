@@ -4,9 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import ku.th.tournamentwebsiteback.entity.JoinAsStaffRelationship;
 import ku.th.tournamentwebsiteback.repository.JoinAsStaffRepository;
 import ku.th.tournamentwebsiteback.request.StaffRelationshipRequest;
-import ku.th.tournamentwebsiteback.response.QualifierMatchProfileResponse;
 import ku.th.tournamentwebsiteback.response.StaffRelationshipResponse;
-import ku.th.tournamentwebsiteback.response.UserProfileResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +19,8 @@ public class StaffService {
     ModelMapper modelMapper;
     @Autowired
     JoinAsStaffRepository staffRepository;
+    @Autowired
+    DTOConvertor convertor;
 
     public List<StaffRelationshipResponse> getAllStaffRelationships() {
         List<JoinAsStaffRelationship> relationships = staffRepository.findAll();
@@ -68,18 +68,6 @@ public class StaffService {
     }
 
     public StaffRelationshipResponse convertToStaffResponse(JoinAsStaffRelationship staff) {
-        StaffRelationshipResponse response = new StaffRelationshipResponse();
-        response.setUser(modelMapper.map(staff.getUser(), UserProfileResponse.class));
-        response.setPosition(staff.getPosition());
-        response.setTournamentId(staff.getTournament().getTournamentId());
-        response.setStatus(staff.getStatus());
-
-        response.setQualifierMatchJudges(
-                staff.getJudges().stream()
-                        .map(judge -> modelMapper.map(judge.getQualifierMatch(), QualifierMatchProfileResponse.class))
-                        .collect(Collectors.toList())
-        );
-
-        return response;
+        return convertor.convertToStaffResponse(staff);
     }
 }

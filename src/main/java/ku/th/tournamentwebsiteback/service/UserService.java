@@ -23,7 +23,7 @@ public class UserService {
     public List<UserProfileResponse> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> convertor.convertToUserProfileResponse(user.getUserId(), null))
+                .map(user -> convertor.idConvertToUserProfileResponse(user.getUserId(), null))
                 .collect(Collectors.toList());
     }
 
