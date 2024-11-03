@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import ku.th.tournamentwebsiteback.constants.Roles;
-import ku.th.tournamentwebsiteback.constants.TokenConstants;
 import ku.th.tournamentwebsiteback.entity.User;
 import ku.th.tournamentwebsiteback.exception.InvalidTokenException;
 import ku.th.tournamentwebsiteback.exception.UserNotFoundException;
@@ -25,13 +24,17 @@ import java.util.List;
 @Service
 public class TokenService {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Value("${jwt.secret}")
     private String secret;
 
+    @Value("${jwt.token.validity}")
+    private long tokenValidity;
+
     private Key secretKey;
 
-    @Autowired
-    private UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
 
     @PostConstruct
@@ -43,7 +46,7 @@ public class TokenService {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + TokenConstants.TOKEN_VALIDITY))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenValidity))
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }

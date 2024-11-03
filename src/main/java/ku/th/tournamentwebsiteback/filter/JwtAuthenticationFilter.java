@@ -6,13 +6,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ku.th.tournamentwebsiteback.exception.InvalidTokenException;
 import ku.th.tournamentwebsiteback.exception.UserNotFoundException;
+import ku.th.tournamentwebsiteback.service.TokenBlacklistService;
 import ku.th.tournamentwebsiteback.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +25,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private TokenBlacklistService blacklistService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -31,6 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
             try {
+                boolean isBlacklist = blacklistService.isTokenBlacklisted(token);
+                if (isBlacklist) {
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is blacklisted");
+                }
+
                 Integer userId = tokenService.extractUserId(token);
                 if (userId != null && tokenService.isTokenValid(token, userId)) {
                     List<SimpleGrantedAuthority> authorities = tokenService.getAuthoritiesByUserId(userId);
