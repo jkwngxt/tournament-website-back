@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.io.IOException;
 
@@ -34,16 +35,10 @@ public class SecurityConfig {
 
                         // Admin-Specific Endpoints
                         .requestMatchers(HttpMethod.POST, "/tournaments").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/tournaments/update/**", "/tournaments/validate/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/tournaments/update/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/qualifier-matches/**").hasRole("ADMIN")
-                        .requestMatchers("/teams").hasRole("ADMIN")
-
-                        // Authenticated User Endpoints
-                        .requestMatchers("/users/**").authenticated()
-                        .requestMatchers("/qualifier-matches/**").authenticated()
-                        .requestMatchers("/teams/**").authenticated()
-                        .requestMatchers("/participation/**").authenticated()
-                        .requestMatchers("/logout").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "staffs/user/**/tournament/**/validate").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "teams/**/validate").hasRole("ADMIN")
 
                         // Allow all authenticated requests on certain paths
                         .anyRequest().authenticated()
