@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -24,30 +26,58 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authorizeHttpRequests(authz -> authz
+                        // Public Endpoints
                         .requestMatchers("/login", "/callback").permitAll()
                         .requestMatchers("/tournaments", "/tournaments/latest", "/tournaments/current").permitAll()
-                        .requestMatchers("/tournaments/add", "/tournaments/update/**", "/tournaments/validate/**").hasRole("ADMIN")
+
+                        // Admin-Specific Endpoints
+                        .requestMatchers(HttpMethod.POST, "/tournaments").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/tournaments/update/**", "/tournaments/validate/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/qualifier-matches/**").hasRole("ADMIN")
                         .requestMatchers("/teams").hasRole("ADMIN")
+
+                        // Authenticated User Endpoints
+                        .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/qualifier-matches/**").authenticated()
+                        .requestMatchers("/teams/**").authenticated()
+                        .requestMatchers("/participation/**").authenticated()
+                        .requestMatchers("/logout").authenticated()
+
+                        // Allow all authenticated requests on certain paths
                         .anyRequest().authenticated()
                 )
-
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-
+                .logout(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setContentType("application/json");
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
-                        })
+                        .authenticationEntryPoint((request, response, authException) ->
+                                handleAuthException(response, "Unauthorized", HttpServletResponse.SC_UNAUTHORIZED)
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                handleAuthException(response, "Forbidden", HttpServletResponse.SC_FORBIDDEN)
+                        )
                 )
 
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    private void handleAuthException(HttpServletResponse response, String error, int status) throws IOException {
+        response.setContentType("application/json");
+        response.setStatus(status);
+
+        String detailedMessage;
+        if (status == HttpServletResponse.SC_UNAUTHORIZED) {
+            detailedMessage = "Access denied: Invalid or expired token. Please login again.";
+        } else if (status == HttpServletResponse.SC_FORBIDDEN) {
+            detailedMessage = "Access forbidden: You do not have permission to access this resource.";
+        } else {
+            detailedMessage = "An unexpected error occurred.";
+        }
+
+        response.getWriter().write("{\"error\": \"" + error + "\", \"message\": \"" + detailedMessage + "\"}");
     }
 }

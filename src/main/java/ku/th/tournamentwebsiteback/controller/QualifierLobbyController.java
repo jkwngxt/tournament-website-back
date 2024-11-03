@@ -39,8 +39,7 @@ public class QualifierLobbyController {
 
     @DeleteMapping("/{lobbyId}") //must be admin
     public ResponseEntity<String> deleteQualifierMatch(@PathVariable UUID lobbyId) {
-        Integer userId = securityService.getCurrentUserId();
-        qualifierMatchService.deleteQualifierMatch(lobbyId, userId);
+        qualifierMatchService.deleteQualifierMatch(lobbyId);
         return ResponseEntity.ok("Qualifier match has been successfully deleted.");
     }
 

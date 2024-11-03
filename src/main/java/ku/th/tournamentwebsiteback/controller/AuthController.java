@@ -37,7 +37,7 @@ public class AuthController {
         return authService.processOAuthCallback(code);
     }
 
-    @PostMapping("/log-out")
+    @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         authService.logout(token);

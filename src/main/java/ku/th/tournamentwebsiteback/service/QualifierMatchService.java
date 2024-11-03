@@ -54,16 +54,9 @@ public class QualifierMatchService {
         return qualifierMatchToDto(qualifierMatchRepository.save(qualifierMatch));
     }
 
-    public void deleteQualifierMatch(UUID lobbyId, Integer userId) {
+    public void deleteQualifierMatch(UUID lobbyId) {
         QualifierMatch qualifierMatch = qualifierMatchRepository.findById(lobbyId)
                 .orElseThrow(() -> new EntityNotFoundException("Qualifier Match not found with id: " + lobbyId));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-
-        if (user.getAdmin() == null) {
-            throw new ForbiddenException("You do not have permission to delete this Qualifier Match.");
-        }
 
         // Remove qualifier match reference from teams
         List<Team> teams = qualifierMatch.getTeams();
